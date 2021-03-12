@@ -18,3 +18,10 @@ Project structure generated with the following command:
 mvn archetype:generate -DgroupId=com.franciscoguemes -DartifactId=sudoku -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 ```
 For further information on the command used you can see a brief tutorial on [maven](https://maven.apache.org/guides/getting-started/index.html#How_do_I_make_my_first_Maven_project) or simply on [generating projects with maven](https://mkyong.com/maven/how-to-create-a-java-project-with-maven/)
+
+
+## Adding .gitignore for Java projects
+
+You can take the best .gitignore file for Java from [here](https://gist.github.com/dedunumax/54e82214715e35439227). But the .gitignore file in this project still contains improvements over the ones on the Internet.
+
+
