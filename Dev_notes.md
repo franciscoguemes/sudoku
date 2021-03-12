@@ -1,4 +1,14 @@
 
+## Naming convention
+The naming convention for my projects is the following:
+  
+```
+groupId: com.francisconguemes.[name_of_aggregator]  
+artifactId: name_of_the_project
+```
+
+In this case since this is not a maven aggregator project the groupId is simply _com.franciscoguemes_
+
 
 ## Generating the project structure
 
