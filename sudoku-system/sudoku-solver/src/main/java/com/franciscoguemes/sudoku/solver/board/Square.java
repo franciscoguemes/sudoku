@@ -1,9 +1,5 @@
 package com.franciscoguemes.sudoku.solver.board;
 
-import com.sun.tools.javac.code.Attribute.Array;
-
-import sun.security.util.ArrayUtil;
-
 /**
  * Represents each square in the board.
  * A square can have two states: Empty or Full, regarding it has been assigned a value or not.

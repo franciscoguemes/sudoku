@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.franciscoguemes.sudoku.solver.Solver;
 import com.franciscoguemes.sudoku.solver.board.Board;
 import com.franciscoguemes.sudoku.solver.board.Value;
-import com.sun.tools.javac.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
