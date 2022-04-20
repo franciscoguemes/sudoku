@@ -46,11 +46,19 @@ public enum Value {
 	}
 	
 	public static Value valueOfNumericalValue(int i) {
-		return Value.valueOfNumericalValue(i);
+		return Value.BY_NUMERICAL_VALUE.get(i);
 	}
 	
 	public static Value valueOfLabel(String label) {
-		return Value.valueOfLabel(label);
+		return Value.BY_LABEL.get(label);
+	}
+	
+	public static boolean isValidValue(String label) {
+		return Value.BY_LABEL.get(label) != null; 
+	}
+	
+	public static boolean isValidValue(int i) {
+		return Value.BY_NUMERICAL_VALUE.get(i) != null;
 	}
 	
 	public static Value getMinValue() {

@@ -6,7 +6,11 @@ package com.franciscoguemes.sudoku.solver.board;
  * @author francisco
  *
  */
-public class EmptyCellException extends Exception {
+public class EmptySquareException extends Exception {
+
+	public EmptySquareException(String msg) {
+		super(msg);
+	}
 
 	/**
 	 * 

@@ -6,6 +6,10 @@ package com.franciscoguemes.sudoku.solver.board;
  * @author francisco
  *
  */
-public class OccupiedCellException extends Exception {
+public class OccupiedSquareException extends Exception {
+
+	public OccupiedSquareException(String msg) {
+		super(msg);
+	}
 
 }

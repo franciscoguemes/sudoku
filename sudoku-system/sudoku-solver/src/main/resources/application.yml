@@ -1,0 +1,19 @@
+
+
+spring:
+  main:
+    web-application-type: none
+    banner-mode: "off"
+  
+logging:
+  level:
+    root: ERROR
+    org.springframework.web: ERROR
+    org.hibernate: ERROR
+    com.franciscoguemes.sudoku.*: DEBUG
+
+
+#logging.level.root=WARN
+#logging.level.com.jgeekmz=DEBUG
+
+#logging.pattern.console=%clr(%5p) [%logger{0}] %m%n
