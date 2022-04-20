@@ -1,4 +1,4 @@
-package com.franciscoguemes.sudoku.board;
+package com.franciscoguemes.sudoku.solver.board;
 
 /**
  * Represents each cell in the board.

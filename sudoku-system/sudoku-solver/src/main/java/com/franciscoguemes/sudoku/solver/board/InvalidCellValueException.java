@@ -1,4 +1,4 @@
-package com.franciscoguemes.sudoku.board;
+package com.franciscoguemes.sudoku.solver.board;
 
 /**
  * You are trying to assign an invalid value to the cell.

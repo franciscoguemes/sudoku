@@ -1,4 +1,4 @@
-package com.franciscoguemes.sudoku.board;
+package com.franciscoguemes.sudoku.solver.board;
 
 /**
  * The cell is empty, so no value can be retrieved.

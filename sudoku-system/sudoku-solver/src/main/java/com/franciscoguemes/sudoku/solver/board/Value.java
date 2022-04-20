@@ -1,4 +1,4 @@
-package com.franciscoguemes.sudoku.board;
+package com.franciscoguemes.sudoku.solver.board;
 
 import java.util.HashMap;
 import java.util.Map;
