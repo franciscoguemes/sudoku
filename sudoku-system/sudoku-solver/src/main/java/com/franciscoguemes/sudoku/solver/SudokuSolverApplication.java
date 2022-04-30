@@ -32,7 +32,7 @@ public class SudokuSolverApplication implements CommandLineRunner{
         }
         
         //TODO: Check here the arguments ....
-//        solver.solve(args[0]);
+        solver.solve(args[0]);
 
 		
 	}

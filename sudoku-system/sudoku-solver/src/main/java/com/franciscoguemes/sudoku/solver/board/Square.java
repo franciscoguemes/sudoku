@@ -1,5 +1,7 @@
 package com.franciscoguemes.sudoku.solver.board;
 
+import java.util.Arrays;
+
 /**
  * Represents each square in the board.
  * A square can have two states: Empty or Full, regarding it has been assigned a value or not.
@@ -20,8 +22,9 @@ public class Square {
 	public Square (int x, int y) {
 		this.row=x;
 		this.col=y;
-		for(boolean b : candidates){
-			b=true;
+		
+		for(int i=0; i<candidates.length; i++) {
+			candidates[i]=true;
 		}
 	}
 	
