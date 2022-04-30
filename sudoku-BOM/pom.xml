@@ -12,13 +12,13 @@
 	<packaging>pom</packaging>
 
 	<properties>
-<!-- 		<io.springfox.springfox.version>3.0.0</io.springfox.springfox.version> -->
-<!-- 		<org.apache.httpcomponents.httpclient5>5.0.3</org.apache.httpcomponents.httpclient5> -->
+		<!-- <io.springfox.springfox.version>3.0.0</io.springfox.springfox.version> -->
+		<!-- <org.apache.httpcomponents.httpclient5>5.0.3</org.apache.httpcomponents.httpclient5> -->
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-		
+
 			<dependency>
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli-spring-boot-starter</artifactId>
@@ -29,6 +29,12 @@
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
 				<optional>true</optional>
+			</dependency>
+
+			<dependency>
+				<groupId>org.javatuples</groupId>
+				<artifactId>javatuples</artifactId>
+				<version>1.2</version>
 			</dependency>
 
 			<!-- Place here all the dependencies that are common to all projects contained 
