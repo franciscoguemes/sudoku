@@ -97,12 +97,12 @@ public class Board implements InitializedBoard {
 
 			// Update candidates in row
 			for (int col = 0; col < COL_LENGTH; col++) {
-				this.squares[square.getRow()][col].updateCandidate(square.getValue());
+				this.squares[square.getRow()][col].removeCandidate(square.getValue());
 			}
 
 			// Update candidates in column
 			for (int row = 0; row < Board.ROW_LENGTH; row++) {
-				this.squares[row][square.getCol()].updateCandidate(square.getValue());
+				this.squares[row][square.getCol()].removeCandidate(square.getValue());
 			}
 
 			// Update candidates in sector
@@ -168,7 +168,7 @@ public class Board implements InitializedBoard {
 		public void updateCandidates(Value value) {
 			for(int row=0; row < ROW_LENGTH; row++) {
 				for(int col=0; col < COL_LENGTH; col++) {
-					this.squares[row][col].updateCandidate(value);
+					this.squares[row][col].removeCandidate(value);
 				}
 			}
 		}
