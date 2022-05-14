@@ -31,9 +31,12 @@ public class SudokuSolverApplication implements CommandLineRunner{
             log.info("args[{}]: {}", i, args[i]);
         }
         
+        
         //TODO: Check here the arguments ....
-        solver.solve(args[0]);
-
+        if(args.length==1) {
+        	solver.solve(args[0]);
+        }
+        
 		
 	}
 

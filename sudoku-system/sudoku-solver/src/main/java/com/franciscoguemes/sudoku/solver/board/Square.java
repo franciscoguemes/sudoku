@@ -40,25 +40,19 @@ public class Square {
 		return this.candidates[value.ordinal()];
 	}
 	
-	public Value getValue() throws EmptySquareException {
-		if(this.isEmpty()) {
-			String msg = this.getPrintableCoordinates() + ": Is empty. It has no value!";
-			throw new EmptySquareException(msg);
-		}
+	public Value getValue() {
 		return this.value;
 	}
 	
-	public void setValue(Value value) throws OccupiedSquareException, InvalidCandidateValueForSquareException {
-		if( this.isOccupied() ) {
-			String msg = this.getPrintableCoordinates() + ": Is already occupied with the value \"" + this.value.getLabel()  + "\"";
-			throw new OccupiedSquareException(msg);
-		}
-		
-		if(!this.isCandidate(value)) {
-			String msg = this.getPrintableCoordinates() + ": The supplied value \"" + value.getLabel()  + "\" is an invalid candidate for the square.";
-			throw new InvalidCandidateValueForSquareException(msg);
-		}
-		
+//	public Value getValue2() throws EmptySquareException {
+//		if(this.isEmpty()) {
+//			String msg = this.getPrintableCoordinates() + ": Is empty. It has no value!";
+//			throw new EmptySquareException(msg);
+//		}
+//		return this.value;
+//	}
+	
+	public void setValue(Value value) {
 		this.value = value;
 	
 		for(boolean candidate : candidates) {
@@ -67,7 +61,31 @@ public class Square {
 		
 	}
 	
-	public void updateCandidates(Value value) {
+//	public void setValue2(Value value) throws OccupiedSquareException, InvalidCandidateValueForSquareException {
+//		if( this.isOccupied() ) {
+//			String msg = this.getPrintableCoordinates() + ": Is already occupied with the value \"" + this.value.getLabel()  + "\"";
+//			throw new OccupiedSquareException(msg);
+//		}
+//		
+//		if(!this.isCandidate(value)) {
+//			String msg = this.getPrintableCoordinates() + ": The supplied value \"" + value.getLabel()  + "\" is an invalid candidate for the square.";
+//			throw new InvalidCandidateValueForSquareException(msg);
+//		}
+//		
+//		this.value = value;
+//	
+//		for(boolean candidate : candidates) {
+//			candidate=false;
+//		}
+//		
+//	}
+	
+	/**
+	 * Update the given candidate value to false.
+	 * 
+	 * @param value The candidate value to be updated.
+	 */
+	public void updateCandidate(Value value) {
 		this.candidates[value.ordinal()]=false;
 	}
 	
@@ -81,7 +99,7 @@ public class Square {
 		return col;
 	}
 	
-	private String getPrintableCoordinates() {
+	protected String getPrintableCoordinates() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Square [row=")
 		.append(this.getRow())

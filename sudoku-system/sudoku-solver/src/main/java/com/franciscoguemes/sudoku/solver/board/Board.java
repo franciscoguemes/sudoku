@@ -74,9 +74,19 @@ public class Board implements InitializedBoard {
 	}
 
 	@Override
-	public void setValue(Value value, int row, int col)
-			throws OccupiedSquareException, InvalidCandidateValueForSquareException {
+	public void setValue(Value value, int row, int col) throws OccupiedSquareException, InvalidCandidateValueForSquareException {
 		Square square = this.squares[row][col];
+		
+		if( square.isOccupied() ) {
+			String msg = square.getPrintableCoordinates() + ": Is already occupied with the value \"" + square.getValue().getLabel()  + "\"";
+			throw new OccupiedSquareException(msg);
+		}
+		
+		if(!square.isCandidate(value)) {
+			String msg = square.getPrintableCoordinates() + ": The supplied value \"" + value.getLabel()  + "\" is an invalid candidate for the square.";
+			throw new InvalidCandidateValueForSquareException(msg);
+		}
+		
 		square.setValue(value);
 		this.updateCandidates(square);
 	}
@@ -87,12 +97,12 @@ public class Board implements InitializedBoard {
 
 			// Update candidates in row
 			for (int col = 0; col < COL_LENGTH; col++) {
-				this.squares[square.getRow()][col].updateCandidates(square.getValue());
+				this.squares[square.getRow()][col].updateCandidate(square.getValue());
 			}
 
 			// Update candidates in column
 			for (int row = 0; row < Board.ROW_LENGTH; row++) {
-				this.squares[row][square.getCol()].updateCandidates(square.getValue());
+				this.squares[row][square.getCol()].updateCandidate(square.getValue());
 			}
 
 			// Update candidates in sector
@@ -124,7 +134,12 @@ public class Board implements InitializedBoard {
 
 	@Override
 	public Value getValue(int row, int col) throws EmptySquareException {
-		return this.squares[row][col].getValue();
+		Square square = this.squares[row][col];
+		if(square.isEmpty()) {
+			String msg = square.getPrintableCoordinates() + ": Is empty. It has no value!";
+			throw new EmptySquareException(msg);
+		}
+		return square.getValue();
 	}
 
 	class Sector {
@@ -153,7 +168,7 @@ public class Board implements InitializedBoard {
 		public void updateCandidates(Value value) {
 			for(int row=0; row < ROW_LENGTH; row++) {
 				for(int col=0; col < COL_LENGTH; col++) {
-					this.squares[row][col].updateCandidates(value);
+					this.squares[row][col].updateCandidate(value);
 				}
 			}
 		}

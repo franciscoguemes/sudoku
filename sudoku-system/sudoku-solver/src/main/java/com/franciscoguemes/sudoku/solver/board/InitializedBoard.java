@@ -10,6 +10,7 @@ public interface InitializedBoard {
 	
 	public Value getValue(int row, int col) throws EmptySquareException;
 	
-	
+
+//	public Tuple<int, int> getClosestSquareSingleCandidate(int x, int y);
 
 }
