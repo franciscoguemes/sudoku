@@ -1,9 +1,7 @@
 # sudoku
 Yet another sudoku solver application
 
-The project is still empty...
-
-
+At the moment the development is at the branch 'origin/0000_Parse_arguments'.
 
 
 
