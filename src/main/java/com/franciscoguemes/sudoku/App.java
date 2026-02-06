@@ -1,4 +1,4 @@
-package com.franciscoguemes;
+package com.franciscoguemes.sudoku;
 
 /**
  * Hello world!
