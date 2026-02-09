@@ -1,8 +1,6 @@
 package com.franciscoguemes.sudoku.textui;
 
-import com.franciscoguemes.sudoku.io.CsvPuzzleReader;
 import com.franciscoguemes.sudoku.io.PuzzleReader;
-import com.franciscoguemes.sudoku.io.SudokuFormatPuzzleReader;
 import com.franciscoguemes.sudoku.model.Generator;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
@@ -39,14 +37,8 @@ public class ConsoleUI {
             return;
         }
 
-        PuzzleReader reader = getReaderForFile(filePath);
-        if (reader == null) {
-            System.err.println("Error: Unsupported file format: " + filePath.getFileName());
-            System.err.println("Supported formats: .csv, .sudoku");
-            return;
-        }
-
         try {
+            PuzzleReader reader = PuzzleReader.getReaderForFile(filePath);
             Puzzle puzzle = reader.read(filePath);
             System.out.println("Puzzle loaded from: " + filePath.getFileName());
             System.out.println();
@@ -80,13 +72,4 @@ public class ConsoleUI {
         }
     }
 
-    private PuzzleReader getReaderForFile(Path filePath) {
-        String fileName = filePath.getFileName().toString().toLowerCase();
-        if (fileName.endsWith(".csv")) {
-            return new CsvPuzzleReader();
-        } else if (fileName.endsWith(".sudoku")) {
-            return new SudokuFormatPuzzleReader();
-        }
-        return null;
-    }
 }
