@@ -12,7 +12,11 @@ import java.util.Scanner;
 
 public class ConsoleUI {
 
-    private final PuzzlePrinter printer = new PuzzlePrinter();
+    private final PuzzlePrinter printer;
+
+    public ConsoleUI(PuzzlePrinter printer) {
+        this.printer = printer;
+    }
 
     public void run(String[] args) {
         if (args.length == 0) {
