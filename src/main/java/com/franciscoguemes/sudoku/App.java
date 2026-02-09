@@ -1,13 +1,10 @@
 package com.franciscoguemes.sudoku;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+import com.franciscoguemes.sudoku.textui.ConsoleUI;
+
+public class App {
+    public static void main(String[] args) {
+        ConsoleUI ui = new ConsoleUI();
+        ui.run(args);
     }
 }
