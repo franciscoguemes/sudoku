@@ -2,7 +2,7 @@ package com.franciscoguemes.sudoku.model;
 
 public class Puzzle {
 
-    private static final int NO_VALUE = 0;
+    public static final int NO_VALUE = 0;
 
     protected int [][] board;
     // Table to determine if a slot is mutable
