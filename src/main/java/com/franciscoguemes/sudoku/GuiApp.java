@@ -28,6 +28,7 @@ public class GuiApp extends Application {
 
     private SudokuGridPane gridPane;
     private Stage primaryStage;
+    private Puzzle currentPuzzle;
 
     @Override
     public void start(Stage stage) {
@@ -45,7 +46,7 @@ public class GuiApp extends Application {
                 this::notImplemented,       // Export puzzle
                 this::importPuzzle,         // Import puzzle
                 this::notImplemented,       // Start playing
-                this::notImplemented,       // Solve puzzle
+                this::solvePuzzle,          // Solve puzzle
                 this::visitWebsite,         // Visit the website
                 this::showAbout             // About
         );
@@ -100,9 +101,35 @@ public class GuiApp extends Application {
         dialog.showAndWait().ifPresent(type -> {
             Generator generator = new Generator();
             Puzzle puzzle = generator.generateRandomSudoku(type);
+            currentPuzzle = puzzle;
             gridPane.displayPuzzle(puzzle);
             primaryStage.setTitle("Sudoku - New " + type.getDescription());
         });
+    }
+
+    private void solvePuzzle() {
+        if (currentPuzzle == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No puzzle");
+            alert.setHeaderText(null);
+            alert.setContentText("There is no puzzle to solve. Generate or import a puzzle first.");
+            alert.showAndWait();
+            return;
+        }
+
+        Puzzle copy = new Puzzle(currentPuzzle);
+        Generator generator = new Generator();
+        boolean solved = generator.solve(copy);
+
+        if (solved) {
+            gridPane.displayPuzzle(copy);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Solver");
+            alert.setHeaderText("No solution found");
+            alert.setContentText("The solver could not find a valid solution for this puzzle.");
+            alert.showAndWait();
+        }
     }
 
     private void importPuzzle() {
@@ -122,6 +149,7 @@ public class GuiApp extends Application {
         try {
             PuzzleReader reader = PuzzleReader.getReaderForFile(filePath);
             Puzzle puzzle = reader.read(filePath);
+            currentPuzzle = puzzle;
             gridPane.displayPuzzle(puzzle);
             primaryStage.setTitle("Sudoku - " + filePath.getFileName());
         } catch (Exception ex) {

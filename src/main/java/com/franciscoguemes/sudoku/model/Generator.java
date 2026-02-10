@@ -40,6 +40,10 @@ public class Generator {
         return puzzle;
     }
 
+    public boolean solve(Puzzle puzzle) {
+        return backtrackSudokuSolver(0, 0, puzzle);
+    }
+
     /**
      * Solves the sudoku puzzle
      * Pre-cond: r = 0,c = 0
