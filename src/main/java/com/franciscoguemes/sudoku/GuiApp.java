@@ -3,12 +3,20 @@ package com.franciscoguemes.sudoku;
 import com.franciscoguemes.sudoku.gui.MainMenuBar;
 import com.franciscoguemes.sudoku.gui.SudokuGridPane;
 import com.franciscoguemes.sudoku.io.PuzzleReader;
+import com.franciscoguemes.sudoku.model.Generator;
 import com.franciscoguemes.sudoku.model.Puzzle;
+import com.franciscoguemes.sudoku.model.PuzzleType;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -33,7 +41,7 @@ public class GuiApp extends Application {
                 this::notImplemented,       // Save game
                 this::notImplemented,       // Print
                 Platform::exit,             // Quit
-                this::notImplemented,       // New puzzle
+                this::newPuzzle,            // New puzzle
                 this::notImplemented,       // Export puzzle
                 this::importPuzzle,         // Import puzzle
                 this::notImplemented,       // Start playing
@@ -55,6 +63,46 @@ public class GuiApp extends Application {
         if (!args.isEmpty()) {
             importPuzzleFromFile(Path.of(args.get(0)));
         }
+    }
+
+    private void newPuzzle() {
+        Dialog<PuzzleType> dialog = new Dialog<>();
+        dialog.setTitle("New Puzzle");
+        dialog.setHeaderText("Select puzzle type:");
+        dialog.initOwner(primaryStage);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        ToggleGroup group = new ToggleGroup();
+        VBox content = new VBox(8);
+        content.setPadding(new Insets(10));
+
+        for (PuzzleType type : PuzzleType.values()) {
+            RadioButton rb = new RadioButton(type.getDescription());
+            rb.setToggleGroup(group);
+            rb.setUserData(type);
+            content.getChildren().add(rb);
+        }
+
+        // Select SUDOKU (9x9) by default
+        group.getToggles().stream()
+                .filter(t -> t.getUserData() == PuzzleType.SUDOKU)
+                .findFirst()
+                .ifPresent(t -> t.setSelected(true));
+
+        dialog.getDialogPane().setContent(content);
+        dialog.setResultConverter(button -> {
+            if (button == ButtonType.OK && group.getSelectedToggle() != null) {
+                return (PuzzleType) group.getSelectedToggle().getUserData();
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(type -> {
+            Generator generator = new Generator();
+            Puzzle puzzle = generator.generateRandomSudoku(type);
+            gridPane.displayPuzzle(puzzle);
+            primaryStage.setTitle("Sudoku - New " + type.getDescription());
+        });
     }
 
     private void importPuzzle() {
