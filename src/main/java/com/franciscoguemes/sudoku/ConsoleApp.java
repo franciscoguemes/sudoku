@@ -8,7 +8,7 @@ import com.franciscoguemes.sudoku.textui.PuzzlePrinter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class App {
+public class ConsoleApp {
 
     private static final String INTERNAL_VALUES_FLAG = "--displayInternalValues";
 
