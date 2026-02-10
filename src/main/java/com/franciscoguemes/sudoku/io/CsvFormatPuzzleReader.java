@@ -2,6 +2,7 @@ package com.franciscoguemes.sudoku.io;
 
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import com.franciscoguemes.sudoku.util.ValueFormatter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,11 +31,7 @@ public class CsvFormatPuzzleReader implements PuzzleReader {
                 int[] row = new int[tokens.length];
                 for (int i = 0; i < tokens.length; i++) {
                     String token = tokens[i].trim();
-                    if (token.isEmpty()) {
-                        row[i] = Puzzle.NO_VALUE;
-                    } else {
-                        row[i] = Integer.parseInt(token);
-                    }
+                    row[i] = ValueFormatter.getInternalValueFromRepresentation(token);
                 }
                 rows.add(row);
             }

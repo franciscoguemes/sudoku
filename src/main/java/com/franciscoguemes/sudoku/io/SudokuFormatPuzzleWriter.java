@@ -2,6 +2,7 @@ package com.franciscoguemes.sudoku.io;
 
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import com.franciscoguemes.sudoku.util.ValueFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,11 +23,7 @@ public class SudokuFormatPuzzleWriter implements PuzzleWriter {
                 if (c > 0) {
                     writer.print(SudokuFormatConstants.SEPARATOR);
                 }
-                if (value == Puzzle.NO_VALUE) {
-                    writer.print(SudokuFormatConstants.EMPTY);
-                } else {
-                    writer.print(value);
-                }
+                writer.print(ValueFormatter.getSudokuFormatRepresentationOf(value));
             }
             writer.println();
         }

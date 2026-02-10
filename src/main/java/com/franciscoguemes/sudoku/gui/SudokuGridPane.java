@@ -55,7 +55,7 @@ public class SudokuGridPane extends StackPane {
                 int value = puzzle.getValue(row, col);
                 boolean mutable = puzzle.isSlotMutable(row, col);
 
-                Label label = new Label(ValueFormatter.formatForGui(value));
+                Label label = new Label(ValueFormatter.getGuiRepresentationOf(value));
                 label.setAlignment(Pos.CENTER);
                 label.setPrefSize(cellSizeFor(type), cellSizeFor(type));
                 label.setStyle("-fx-border-color: #cccccc; -fx-border-width: 0.5;");

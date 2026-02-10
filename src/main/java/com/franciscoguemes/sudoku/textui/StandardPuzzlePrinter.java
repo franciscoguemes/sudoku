@@ -12,6 +12,6 @@ public class StandardPuzzlePrinter extends AbstractPuzzlePrinter {
 
     @Override
     protected void renderValue(int internalValue, StringBuilder sb, int cellWidth) {
-        ValueFormatter.formatForTextUi(internalValue,sb);
+        sb.append(ValueFormatter.getSudokuFormatRepresentationOf(internalValue));
     }
 }
