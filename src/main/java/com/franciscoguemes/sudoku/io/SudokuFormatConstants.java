@@ -1,6 +1,6 @@
 package com.franciscoguemes.sudoku.io;
 
-public class SudokuConstants {
+public class SudokuFormatConstants {
 
 
     public static final String EMPTY = ".";

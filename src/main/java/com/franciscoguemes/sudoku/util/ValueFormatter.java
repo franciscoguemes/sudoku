@@ -1,6 +1,6 @@
 package com.franciscoguemes.sudoku.util;
 
-import com.franciscoguemes.sudoku.io.SudokuConstants;
+import com.franciscoguemes.sudoku.io.SudokuFormatConstants;
 import com.franciscoguemes.sudoku.model.Puzzle;
 
 public final class ValueFormatter {
@@ -22,7 +22,7 @@ public final class ValueFormatter {
 
     public static void formatForTextUi(int internalValue, StringBuilder sb) {
         if (internalValue == Puzzle.NO_VALUE) {
-            sb.append(SudokuConstants.EMPTY);
+            sb.append(SudokuFormatConstants.EMPTY);
             return;
         }
         if (internalValue > 9) {

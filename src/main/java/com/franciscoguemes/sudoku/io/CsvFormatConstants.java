@@ -1,6 +1,6 @@
 package com.franciscoguemes.sudoku.io;
 
-public class CsvConstants {
+public class CsvFormatConstants {
 
     public static final String EMPTY = "0";
 

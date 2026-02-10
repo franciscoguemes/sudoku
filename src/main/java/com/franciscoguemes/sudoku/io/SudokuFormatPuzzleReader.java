@@ -28,7 +28,7 @@ public class SudokuFormatPuzzleReader implements PuzzleReader {
                 int[] row = new int[tokens.length];
                 for (int i = 0; i < tokens.length; i++) {
                     String token = tokens[i];
-                    if (SudokuConstants.EMPTY.equals(token) || CsvConstants.EMPTY.equals(token)) {
+                    if (SudokuFormatConstants.EMPTY.equals(token) || CsvFormatConstants.EMPTY.equals(token)) {
                         row[i] = Puzzle.NO_VALUE;
                     } else {
                         row[i] = Integer.parseInt(token);

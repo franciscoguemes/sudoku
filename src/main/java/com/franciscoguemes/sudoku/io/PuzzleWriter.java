@@ -19,12 +19,12 @@ public interface PuzzleWriter {
 
     static PuzzleWriter getWriterForFile(Path filePath) throws IOException {
         String fileName = filePath.getFileName().toString().toLowerCase();
-        if (fileName.endsWith(CsvConstants.EXTENSION)) {
-            return new CsvPuzzleWriter();
-        } else if (fileName.endsWith(SudokuConstants.EXTENSION)) {
+        if (fileName.endsWith(CsvFormatConstants.EXTENSION)) {
+            return new CsvFormatPuzzleWriter();
+        } else if (fileName.endsWith(SudokuFormatConstants.EXTENSION)) {
             return new SudokuFormatPuzzleWriter();
         }
         throw new IOException("Unsupported file format: " + filePath.getFileName()
-                + ". Supported formats: " + CsvConstants.EXTENSION + ", " + SudokuConstants.EXTENSION);
+                + ". Supported formats: " + CsvFormatConstants.EXTENSION + ", " + SudokuFormatConstants.EXTENSION);
     }
 }

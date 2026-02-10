@@ -19,13 +19,13 @@ public interface PuzzleReader {
 
     static PuzzleReader getReaderForFile(Path filePath) throws IOException {
         String fileName = filePath.getFileName().toString().toLowerCase();
-        if (fileName.endsWith(CsvConstants.EXTENSION)) {
-            return new CsvPuzzleReader();
-        } else if (fileName.endsWith(SudokuConstants.EXTENSION)) {
+        if (fileName.endsWith(CsvFormatConstants.EXTENSION)) {
+            return new CsvFormatPuzzleReader();
+        } else if (fileName.endsWith(SudokuFormatConstants.EXTENSION)) {
             return new SudokuFormatPuzzleReader();
         }
 
         throw new IOException("Unsupported file format: " + filePath.getFileName()
-                + ". Supported formats: " + CsvConstants.EXTENSION + ", " + SudokuConstants.EXTENSION);
+                + ". Supported formats: " + CsvFormatConstants.EXTENSION + ", " + SudokuFormatConstants.EXTENSION);
     }
 }

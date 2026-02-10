@@ -20,10 +20,10 @@ public class SudokuFormatPuzzleWriter implements PuzzleWriter {
             for (int c = 0; c < cols; c++) {
                 int value = puzzle.getValue(r, c);
                 if (c > 0) {
-                    writer.print(SudokuConstants.SEPARATOR);
+                    writer.print(SudokuFormatConstants.SEPARATOR);
                 }
                 if (value == Puzzle.NO_VALUE) {
-                    writer.print(SudokuConstants.EMPTY);
+                    writer.print(SudokuFormatConstants.EMPTY);
                 } else {
                     writer.print(value);
                 }

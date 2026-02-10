@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-public class CsvPuzzleWriter implements PuzzleWriter {
+public class CsvFormatPuzzleWriter implements PuzzleWriter {
 
     @Override
     public void write(Puzzle puzzle, OutputStream outputStream) throws IOException {
@@ -20,7 +20,7 @@ public class CsvPuzzleWriter implements PuzzleWriter {
             for (int c = 0; c < cols; c++) {
                 int value = puzzle.getValue(r, c);
                 if (c > 0) {
-                    writer.print(CsvConstants.SEPARATOR);
+                    writer.print(CsvFormatConstants.SEPARATOR);
                 }
                 if (value != Puzzle.NO_VALUE) {
                     writer.print(value);

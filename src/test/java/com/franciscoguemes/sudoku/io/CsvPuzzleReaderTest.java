@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CsvPuzzleReader Tests")
 class CsvPuzzleReaderTest {
 
-    private final CsvPuzzleReader reader = new CsvPuzzleReader();
+    private final CsvFormatPuzzleReader reader = new CsvFormatPuzzleReader();
 
     @Test
     @DisplayName("Reads the hardest sudoku from CSV file with correct values")
