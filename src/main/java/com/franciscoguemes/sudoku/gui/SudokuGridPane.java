@@ -2,6 +2,7 @@ package com.franciscoguemes.sudoku.gui;
 
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import com.franciscoguemes.sudoku.util.ValueFormatter;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -54,7 +55,7 @@ public class SudokuGridPane extends StackPane {
                 int value = puzzle.getValue(row, col);
                 boolean mutable = puzzle.isSlotMutable(row, col);
 
-                Label label = new Label(ValueFormatter.format(value));
+                Label label = new Label(ValueFormatter.formatForGui(value));
                 label.setAlignment(Pos.CENTER);
                 label.setPrefSize(cellSizeFor(type), cellSizeFor(type));
                 label.setStyle("-fx-border-color: #cccccc; -fx-border-width: 0.5;");
