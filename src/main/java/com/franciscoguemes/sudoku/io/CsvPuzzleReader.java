@@ -10,9 +10,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CsvPuzzleReader implements PuzzleReader {
+import static com.franciscoguemes.sudoku.io.CsvConstants.SEPARATOR;
 
-    public static final String SEPARATOR = ",";
+public class CsvPuzzleReader implements PuzzleReader {
 
     @Override
     public Puzzle read(InputStream inputStream) throws IOException {

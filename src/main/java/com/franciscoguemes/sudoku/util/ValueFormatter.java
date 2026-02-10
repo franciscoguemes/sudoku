@@ -1,11 +1,11 @@
 package com.franciscoguemes.sudoku.util;
 
+import com.franciscoguemes.sudoku.io.SudokuConstants;
 import com.franciscoguemes.sudoku.model.Puzzle;
 
 public final class ValueFormatter {
 
     public static final String EMPTY_STRING = "";
-    public static final String DOT_STRING = ".";
 
     private ValueFormatter() {
     }
@@ -22,7 +22,7 @@ public final class ValueFormatter {
 
     public static void formatForTextUi(int internalValue, StringBuilder sb) {
         if (internalValue == Puzzle.NO_VALUE) {
-            sb.append(DOT_STRING);
+            sb.append(SudokuConstants.EMPTY);
             return;
         }
         if (internalValue > 9) {

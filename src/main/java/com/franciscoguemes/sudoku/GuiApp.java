@@ -3,6 +3,7 @@ package com.franciscoguemes.sudoku;
 import com.franciscoguemes.sudoku.gui.MainMenuBar;
 import com.franciscoguemes.sudoku.gui.SudokuGridPane;
 import com.franciscoguemes.sudoku.io.PuzzleReader;
+import com.franciscoguemes.sudoku.io.PuzzleWriter;
 import com.franciscoguemes.sudoku.model.Generator;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
@@ -43,7 +44,7 @@ public class GuiApp extends Application {
                 this::notImplemented,       // Print
                 Platform::exit,             // Quit
                 this::newPuzzle,            // New puzzle
-                this::notImplemented,       // Export puzzle
+                this::exportPuzzle,         // Export puzzle
                 this::importPuzzle,         // Import puzzle
                 this::notImplemented,       // Start playing
                 this::solvePuzzle,          // Solve puzzle
@@ -129,6 +130,37 @@ public class GuiApp extends Application {
             alert.setHeaderText("No solution found");
             alert.setContentText("The solver could not find a valid solution for this puzzle.");
             alert.showAndWait();
+        }
+    }
+
+    private void exportPuzzle() {
+        if (currentPuzzle == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No puzzle");
+            alert.setHeaderText(null);
+            alert.setContentText("There is no puzzle to export. Generate or import a puzzle first.");
+            alert.showAndWait();
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Puzzle");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Sudoku format", "*.sudoku"),
+                new FileChooser.ExtensionFilter("CSV format", "*.csv")
+        );
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            try {
+                PuzzleWriter writer = PuzzleWriter.getWriterForFile(file.toPath());
+                writer.write(currentPuzzle, file.toPath());
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Failed to export puzzle");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
         }
     }
 

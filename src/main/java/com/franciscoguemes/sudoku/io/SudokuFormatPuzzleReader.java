@@ -12,9 +12,6 @@ import java.util.List;
 
 public class SudokuFormatPuzzleReader implements PuzzleReader {
 
-    public static final String DOT = ".";
-    public static final String ZERO = "0";
-
     @Override
     public Puzzle read(InputStream inputStream) throws IOException {
         List<int[]> rows = new ArrayList<>();
@@ -31,7 +28,7 @@ public class SudokuFormatPuzzleReader implements PuzzleReader {
                 int[] row = new int[tokens.length];
                 for (int i = 0; i < tokens.length; i++) {
                     String token = tokens[i];
-                    if (DOT.equals(token) || ZERO.equals(token)) {
+                    if (SudokuConstants.EMPTY.equals(token) || CsvConstants.EMPTY.equals(token)) {
                         row[i] = Puzzle.NO_VALUE;
                     } else {
                         row[i] = Integer.parseInt(token);
