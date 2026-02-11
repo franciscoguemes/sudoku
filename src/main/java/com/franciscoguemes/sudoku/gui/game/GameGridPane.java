@@ -20,12 +20,16 @@ public class GameGridPane extends StackPane {
     private static final String BOX_BORDER = "#37474F";
     private static final String GIVEN_COLOR = "#1A237E";
     private static final String PLAYER_COLOR = "#1565C0";
+    private static final String WRONG_COLOR = "#D32F2F";
 
     private final GridPane outerGrid = new GridPane();
     private Puzzle puzzle;
+    private Puzzle solution;
     private int selectedRow = -1;
     private int selectedCol = -1;
     private Label[][] cellLabels;
+    private int[][] wrongValues;
+    private Runnable onWrongMove;
 
     public GameGridPane() {
         setAlignment(Pos.CENTER);
@@ -33,10 +37,12 @@ public class GameGridPane extends StackPane {
         outerGrid.setAlignment(Pos.CENTER);
     }
 
-    public void displayPuzzle(Puzzle puzzle) {
+    public void displayPuzzle(Puzzle puzzle, Puzzle solution) {
         this.puzzle = puzzle;
+        this.solution = solution;
         this.selectedRow = -1;
         this.selectedCol = -1;
+        this.wrongValues = new int[puzzle.getPuzzleType().getRows()][puzzle.getPuzzleType().getColumns()];
         rebuild();
     }
 
@@ -56,24 +62,34 @@ public class GameGridPane extends StackPane {
         if (selectedRow < 0 || selectedCol < 0) return;
         if (!puzzle.isSlotMutable(selectedRow, selectedCol)) return;
 
-        if (value == Puzzle.NO_VALUE) {
+        // Clear any existing wrong value in this cell
+        wrongValues[selectedRow][selectedCol] = 0;
+
+        // Clear any existing correct value in the puzzle
+        if (puzzle.getValue(selectedRow, selectedCol) != Puzzle.NO_VALUE) {
             puzzle.makeSlotEmpty(selectedRow, selectedCol);
+        }
+
+        if (value == Puzzle.NO_VALUE) {
             refresh();
             return;
         }
 
-        int previousValue = puzzle.getValue(selectedRow, selectedCol);
-        if (previousValue != Puzzle.NO_VALUE) {
-            puzzle.makeSlotEmpty(selectedRow, selectedCol);
-        }
-
-        puzzle.makeMove(selectedRow, selectedCol, value, true);
-
-        if (puzzle.getValue(selectedRow, selectedCol) == Puzzle.NO_VALUE && previousValue != Puzzle.NO_VALUE) {
-            puzzle.makeMove(selectedRow, selectedCol, previousValue, true);
+        int correctValue = solution.getValue(selectedRow, selectedCol);
+        if (value == correctValue) {
+            puzzle.makeMove(selectedRow, selectedCol, value, true);
+        } else {
+            wrongValues[selectedRow][selectedCol] = value;
+            if (onWrongMove != null) {
+                onWrongMove.run();
+            }
         }
 
         refresh();
+    }
+
+    public void setOnWrongMove(Runnable handler) {
+        this.onWrongMove = handler;
     }
 
     public int getSelectedRow() {
@@ -142,15 +158,21 @@ public class GameGridPane extends StackPane {
 
     private void updateCellAppearance(int row, int col, double fontSize) {
         Label label = cellLabels[row][col];
-        int value = puzzle.getValue(row, col);
+        int puzzleValue = puzzle.getValue(row, col);
+        int wrongValue = wrongValues[row][col];
         boolean mutable = puzzle.isSlotMutable(row, col);
+        boolean isWrong = wrongValue != 0;
 
-        label.setText(ValueFormatter.getGuiRepresentationOf(value));
+        int displayValue = isWrong ? wrongValue : puzzleValue;
+        label.setText(ValueFormatter.getGuiRepresentationOf(displayValue));
 
-        String bgColor = determineBgColor(row, col, value);
+        String bgColor = determineBgColor(row, col, displayValue);
         String style = "-fx-border-color: " + CELL_BORDER + "; -fx-border-width: 0.5; -fx-background-color: " + bgColor + ";";
 
-        if (value != Puzzle.NO_VALUE) {
+        if (isWrong) {
+            label.setFont(Font.font("System", FontWeight.NORMAL, fontSize));
+            style += " -fx-text-fill: " + WRONG_COLOR + ";";
+        } else if (displayValue != Puzzle.NO_VALUE) {
             if (!mutable) {
                 label.setFont(Font.font("System", FontWeight.BOLD, fontSize));
                 style += " -fx-text-fill: " + GIVEN_COLOR + ";";
@@ -173,8 +195,10 @@ public class GameGridPane extends StackPane {
             return SELECTED_BG;
         }
 
-        int selectedValue = puzzle.getValue(selectedRow, selectedCol);
-        if (value != Puzzle.NO_VALUE && selectedValue != Puzzle.NO_VALUE && value == selectedValue) {
+        int selectedDisplayValue = wrongValues[selectedRow][selectedCol] != 0
+                ? wrongValues[selectedRow][selectedCol]
+                : puzzle.getValue(selectedRow, selectedCol);
+        if (value != Puzzle.NO_VALUE && selectedDisplayValue != Puzzle.NO_VALUE && value == selectedDisplayValue) {
             return SAME_NUMBER_BG;
         }
 

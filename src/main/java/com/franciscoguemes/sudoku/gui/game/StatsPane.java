@@ -10,9 +10,12 @@ import javafx.scene.text.FontWeight;
 
 public class StatsPane extends VBox {
 
+    private static final int MAX_MISTAKES = 3;
+
     private final Label scoreLabel;
     private final Label mistakesLabel;
     private final Label timeLabel;
+    private int mistakes = 0;
 
     public StatsPane() {
         setAlignment(Pos.CENTER);
@@ -37,16 +40,32 @@ public class StatsPane extends VBox {
         getChildren().addAll(scoreLabel, statsRow);
     }
 
-    public Label getScoreLabel() {
-        return scoreLabel;
+    public void incrementMistakes() {
+        mistakes++;
+        mistakesLabel.setText(mistakes + "/" + MAX_MISTAKES);
+        if (mistakes >= MAX_MISTAKES) {
+            mistakesLabel.setStyle("-fx-text-fill: #D32F2F; -fx-font-weight: bold;");
+        }
     }
 
-    public Label getMistakesLabel() {
-        return mistakesLabel;
+    public void decrementMistakes() {
+        if (mistakes > 0) mistakes--;
+        mistakesLabel.setText(mistakes + "/" + MAX_MISTAKES);
+        mistakesLabel.setStyle("-fx-text-fill: #37474F;");
     }
 
-    public Label getTimeLabel() {
-        return timeLabel;
+    public int getMistakes() {
+        return mistakes;
+    }
+
+    public void resetMistakes() {
+        mistakes = 0;
+        mistakesLabel.setText("0/" + MAX_MISTAKES);
+        mistakesLabel.setStyle("-fx-text-fill: #37474F;");
+    }
+
+    public boolean isGameOver() {
+        return mistakes >= MAX_MISTAKES;
     }
 
     private VBox createStatBox(String title, String value) {

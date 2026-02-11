@@ -12,7 +12,9 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -21,19 +23,25 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.Optional;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class GameApp extends Application {
 
     private PuzzleType currentPuzzleType = PuzzleType.SUDOKU;
+    private Stage primaryStage;
     private GameGridPane gridPane;
     private NumberPad numberPad;
+    private StatsPane statsPane;
 
     @Override
     public void start(Stage stage) {
+        this.primaryStage = stage;
         gridPane = new GameGridPane();
         numberPad = new NumberPad();
+        gridPane.setOnWrongMove(this::handleWrongMove);
 
         // Puzzle type selector
         Map<PuzzleType, String> typeItems = new LinkedHashMap<>();
@@ -52,7 +60,7 @@ public class GameApp extends Application {
         difficultySelector.setOnSelectionChanged(diff -> generateNewPuzzle());
 
         // Stats and tools
-        StatsPane statsPane = new StatsPane();
+        statsPane = new StatsPane();
         GameToolBar toolBar = new GameToolBar();
         toolBar.setOnErase(() -> gridPane.placeNumber(Puzzle.NO_VALUE));
 
@@ -113,7 +121,36 @@ public class GameApp extends Application {
     private void generateNewPuzzle() {
         Generator generator = new Generator();
         Puzzle puzzle = generator.generateRandomSudoku(currentPuzzleType);
-        gridPane.displayPuzzle(puzzle);
+        Puzzle solution = new Puzzle(puzzle);
+        generator.solve(solution);
+        gridPane.displayPuzzle(puzzle, solution);
+        statsPane.resetMistakes();
+    }
+
+    private void handleWrongMove() {
+        statsPane.incrementMistakes();
+        if (statsPane.isGameOver()) {
+            showGameOverDialog();
+        }
+    }
+
+    private void showGameOverDialog() {
+        Alert dialog = new Alert(Alert.AlertType.NONE);
+        dialog.setTitle("Game Over");
+        dialog.setHeaderText("You've made 3 mistakes!");
+        dialog.setContentText("The game is over. What would you like to do?");
+        dialog.initOwner(primaryStage);
+
+        ButtonType secondChance = new ButtonType("Second chance");
+        ButtonType newGame = new ButtonType("New game");
+        dialog.getButtonTypes().addAll(secondChance, newGame);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == newGame) {
+            generateNewPuzzle();
+        } else {
+            statsPane.decrementMistakes();
+        }
     }
 
     public static void main(String[] args) {
