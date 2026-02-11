@@ -1,4 +1,4 @@
-package com.franciscoguemes.sudoku.gui;
+package com.franciscoguemes.sudoku.gui.editor;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;

@@ -1,7 +1,7 @@
-package com.franciscoguemes.sudoku;
+package com.franciscoguemes.sudoku.gui;
 
-import com.franciscoguemes.sudoku.gui.MainMenuBar;
-import com.franciscoguemes.sudoku.gui.SudokuGridPane;
+import com.franciscoguemes.sudoku.gui.editor.MainMenuBar;
+import com.franciscoguemes.sudoku.gui.editor.SudokuGridPane;
 import com.franciscoguemes.sudoku.io.PuzzleReader;
 import com.franciscoguemes.sudoku.io.PuzzleWriter;
 import com.franciscoguemes.sudoku.model.Generator;
@@ -25,7 +25,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
-public class GuiApp extends Application {
+public class EditorApp extends Application {
 
     private SudokuGridPane gridPane;
     private Stage primaryStage;

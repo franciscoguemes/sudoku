@@ -1,4 +1,4 @@
-package com.franciscoguemes.sudoku.gui;
+package com.franciscoguemes.sudoku.gui.editor;
 
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
