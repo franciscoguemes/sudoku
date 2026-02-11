@@ -118,6 +118,32 @@ public class GameGridPane extends StackPane {
         refresh();
     }
 
+    public void erase() {
+        if (selectedRow < 0 || selectedCol < 0) return;
+        if (!puzzle.isSlotMutable(selectedRow, selectedCol)) return;
+
+        int prevPuzzleValue = puzzle.getValue(selectedRow, selectedCol);
+        int prevWrongValue = wrongValues[selectedRow][selectedCol];
+        Set<Integer> prevNotes = notes[selectedRow][selectedCol];
+
+        // Nothing to erase if cell is already empty
+        if (prevPuzzleValue == Puzzle.NO_VALUE && prevWrongValue == 0 && prevNotes.isEmpty()) return;
+
+        // Capture previous state for undo
+        undoStack.push(new UndoEntry.PlaceValue(
+                selectedRow, selectedCol,
+                prevPuzzleValue, prevWrongValue,
+                new HashSet<>(prevNotes)));
+
+        wrongValues[selectedRow][selectedCol] = 0;
+        notes[selectedRow][selectedCol].clear();
+        if (prevPuzzleValue != Puzzle.NO_VALUE) {
+            puzzle.makeSlotEmpty(selectedRow, selectedCol);
+        }
+
+        refresh();
+    }
+
     private void handleNotesInput(int value) {
         if (value == Puzzle.NO_VALUE) return;
         // Notes only apply to empty cells (no puzzle value and no wrong value)

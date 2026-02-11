@@ -64,7 +64,7 @@ public class GameApp extends Application {
         statsPane = new StatsPane();
         GameToolBar toolBar = new GameToolBar();
         toolBar.setOnUndo(() -> gridPane.undo());
-        toolBar.setOnErase(() -> gridPane.placeNumber(Puzzle.NO_VALUE));
+        toolBar.setOnErase(() -> gridPane.erase());
         toolBar.setOnNotesToggled(() -> gridPane.setNotesMode(toolBar.isNotesMode()));
 
         // Number pad
@@ -179,7 +179,7 @@ public class GameApp extends Application {
             case E -> handleValueKey(14, event);
             case F -> handleValueKey(15, event);
             case G -> handleValueKey(16, event);
-            case DELETE, BACK_SPACE -> { gridPane.placeNumber(Puzzle.NO_VALUE); event.consume(); }
+            case DELETE, BACK_SPACE -> { gridPane.erase(); event.consume(); }
             default -> {}
         }
     }
