@@ -63,6 +63,7 @@ public class GameApp extends Application {
         statsPane = new StatsPane();
         GameToolBar toolBar = new GameToolBar();
         toolBar.setOnErase(() -> gridPane.placeNumber(Puzzle.NO_VALUE));
+        toolBar.setOnNotesToggled(() -> gridPane.setNotesMode(toolBar.isNotesMode()));
 
         // Number pad
         numberPad.setOnNumberSelected(value -> gridPane.placeNumber(value));

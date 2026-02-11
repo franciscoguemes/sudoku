@@ -10,8 +10,13 @@ public class GameToolBar extends HBox {
 
     private static final String TOOL_BG = "#ECEFF1";
     private static final String TOOL_TEXT = "#37474F";
+    private static final String TOOL_ACTIVE_BG = "#3F51B5";
+    private static final String TOOL_ACTIVE_TEXT = "white";
 
     private Runnable onErase;
+    private Runnable onNotesToggled;
+    private boolean notesMode;
+    private final Button notesBtn;
 
     public GameToolBar() {
         setAlignment(Pos.CENTER);
@@ -20,18 +25,50 @@ public class GameToolBar extends HBox {
 
         Button undoBtn = createToolButton("Undo");
         Button eraseBtn = createToolButton("Erase");
-        Button notesBtn = createToolButton("Notes");
+        notesBtn = createToolButton("Notes");
         Button hintsBtn = createToolButton("Hints");
 
         eraseBtn.setOnAction(e -> {
             if (onErase != null) onErase.run();
         });
 
+        notesBtn.setOnAction(e -> {
+            notesMode = !notesMode;
+            updateNotesButtonStyle();
+            if (onNotesToggled != null) onNotesToggled.run();
+        });
+
         getChildren().addAll(undoBtn, eraseBtn, notesBtn, hintsBtn);
+    }
+
+    public boolean isNotesMode() {
+        return notesMode;
     }
 
     public void setOnErase(Runnable handler) {
         this.onErase = handler;
+    }
+
+    public void setOnNotesToggled(Runnable handler) {
+        this.onNotesToggled = handler;
+    }
+
+    private void updateNotesButtonStyle() {
+        if (notesMode) {
+            notesBtn.setStyle(
+                    "-fx-background-color: " + TOOL_ACTIVE_BG + ";" +
+                    "-fx-text-fill: " + TOOL_ACTIVE_TEXT + ";" +
+                    "-fx-background-radius: 8;" +
+                    "-fx-cursor: hand;"
+            );
+        } else {
+            notesBtn.setStyle(
+                    "-fx-background-color: " + TOOL_BG + ";" +
+                    "-fx-text-fill: " + TOOL_TEXT + ";" +
+                    "-fx-background-radius: 8;" +
+                    "-fx-cursor: hand;"
+            );
+        }
     }
 
     private Button createToolButton(String text) {
