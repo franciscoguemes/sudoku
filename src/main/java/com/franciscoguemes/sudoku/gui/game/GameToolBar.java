@@ -13,6 +13,7 @@ public class GameToolBar extends HBox {
     private static final String TOOL_ACTIVE_BG = "#3F51B5";
     private static final String TOOL_ACTIVE_TEXT = "white";
 
+    private Runnable onUndo;
     private Runnable onErase;
     private Runnable onNotesToggled;
     private boolean notesMode;
@@ -27,6 +28,10 @@ public class GameToolBar extends HBox {
         Button eraseBtn = createToolButton("Erase");
         notesBtn = createToolButton("Notes");
         Button hintsBtn = createToolButton("Hints");
+
+        undoBtn.setOnAction(e -> {
+            if (onUndo != null) onUndo.run();
+        });
 
         eraseBtn.setOnAction(e -> {
             if (onErase != null) onErase.run();
@@ -43,6 +48,10 @@ public class GameToolBar extends HBox {
 
     public boolean isNotesMode() {
         return notesMode;
+    }
+
+    public void setOnUndo(Runnable handler) {
+        this.onUndo = handler;
     }
 
     public void setOnErase(Runnable handler) {

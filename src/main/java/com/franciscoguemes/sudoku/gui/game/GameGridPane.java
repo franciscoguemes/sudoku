@@ -11,6 +11,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,6 +41,7 @@ public class GameGridPane extends StackPane {
     private Set<Integer>[][] notes;
     private boolean notesMode;
     private Runnable onWrongMove;
+    private final Deque<UndoEntry> undoStack = new ArrayDeque<>();
 
     public GameGridPane() {
         setAlignment(Pos.CENTER);
@@ -55,6 +58,7 @@ public class GameGridPane extends StackPane {
         int cols = puzzle.getPuzzleType().getColumns();
         this.wrongValues = new int[rows][cols];
         this.notes = createNotesArray(rows, cols);
+        this.undoStack.clear();
         rebuild();
     }
 
@@ -77,6 +81,13 @@ public class GameGridPane extends StackPane {
             handleNotesInput(value);
             return;
         }
+
+        // Capture previous state for undo
+        undoStack.push(new UndoEntry.PlaceValue(
+                selectedRow, selectedCol,
+                puzzle.getValue(selectedRow, selectedCol),
+                wrongValues[selectedRow][selectedCol],
+                new HashSet<>(notes[selectedRow][selectedCol])));
 
         // Clear any existing wrong value in this cell
         wrongValues[selectedRow][selectedCol] = 0;
@@ -114,11 +125,16 @@ public class GameGridPane extends StackPane {
         if (wrongValues[selectedRow][selectedCol] != 0) return;
 
         Set<Integer> cellNotes = notes[selectedRow][selectedCol];
+        boolean wasAdded;
         if (cellNotes.contains(value)) {
             cellNotes.remove(value);
+            wasAdded = false;
         } else {
             cellNotes.add(value);
+            wasAdded = true;
         }
+
+        undoStack.push(new UndoEntry.NoteToggle(selectedRow, selectedCol, value, wasAdded));
 
         refresh();
     }
@@ -133,6 +149,37 @@ public class GameGridPane extends StackPane {
 
     public void setOnWrongMove(Runnable handler) {
         this.onWrongMove = handler;
+    }
+
+    public void undo() {
+        if (undoStack.isEmpty()) return;
+
+        UndoEntry entry = undoStack.pop();
+        int row = entry.row();
+        int col = entry.col();
+
+        switch (entry) {
+            case UndoEntry.PlaceValue pv -> {
+                puzzle.makeSlotEmpty(row, col);
+                wrongValues[row][col] = 0;
+                notes[row][col].clear();
+
+                if (pv.prevPuzzleValue() != Puzzle.NO_VALUE) {
+                    puzzle.makeMove(row, col, pv.prevPuzzleValue(), true);
+                }
+                wrongValues[row][col] = pv.prevWrongValue();
+                notes[row][col].addAll(pv.prevNotes());
+            }
+            case UndoEntry.NoteToggle nt -> {
+                if (nt.wasAdded()) {
+                    notes[row][col].remove(nt.noteValue());
+                } else {
+                    notes[row][col].add(nt.noteValue());
+                }
+            }
+        }
+
+        refresh();
     }
 
     public int getSelectedRow() {
@@ -387,5 +434,15 @@ public class GameGridPane extends StackPane {
             case BIG_SUDOKU -> 6;
             case MAXI_SUDOKU -> 5;
         };
+    }
+
+    private sealed interface UndoEntry {
+        int row();
+        int col();
+
+        record PlaceValue(int row, int col, int prevPuzzleValue, int prevWrongValue,
+                          Set<Integer> prevNotes) implements UndoEntry {}
+
+        record NoteToggle(int row, int col, int noteValue, boolean wasAdded) implements UndoEntry {}
     }
 }

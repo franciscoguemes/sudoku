@@ -62,6 +62,7 @@ public class GameApp extends Application {
         // Stats and tools
         statsPane = new StatsPane();
         GameToolBar toolBar = new GameToolBar();
+        toolBar.setOnUndo(() -> gridPane.undo());
         toolBar.setOnErase(() -> gridPane.placeNumber(Puzzle.NO_VALUE));
         toolBar.setOnNotesToggled(() -> gridPane.setNotesMode(toolBar.isNotesMode()));
 
