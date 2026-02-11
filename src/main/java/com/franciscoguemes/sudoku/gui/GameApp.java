@@ -21,6 +21,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.util.Optional;
@@ -107,6 +108,7 @@ public class GameApp extends Application {
         root.setStyle("-fx-background-color: white;");
 
         Scene scene = new Scene(root, 850, 700);
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleKeyPress);
         stage.setTitle("Sudoku");
         stage.setScene(scene);
         stage.show();
@@ -152,6 +154,40 @@ public class GameApp extends Application {
             generateNewPuzzle();
         } else {
             statsPane.decrementMistakes();
+        }
+    }
+
+    private void handleKeyPress(KeyEvent event) {
+        switch (event.getCode()) {
+            case UP -> { gridPane.moveSelection(-1, 0); event.consume(); }
+            case DOWN -> { gridPane.moveSelection(1, 0); event.consume(); }
+            case LEFT -> { gridPane.moveSelection(0, -1); event.consume(); }
+            case RIGHT -> { gridPane.moveSelection(0, 1); event.consume(); }
+            case DIGIT1, NUMPAD1 -> handleValueKey(1, event);
+            case DIGIT2, NUMPAD2 -> handleValueKey(2, event);
+            case DIGIT3, NUMPAD3 -> handleValueKey(3, event);
+            case DIGIT4, NUMPAD4 -> handleValueKey(4, event);
+            case DIGIT5, NUMPAD5 -> handleValueKey(5, event);
+            case DIGIT6, NUMPAD6 -> handleValueKey(6, event);
+            case DIGIT7, NUMPAD7 -> handleValueKey(7, event);
+            case DIGIT8, NUMPAD8 -> handleValueKey(8, event);
+            case DIGIT9, NUMPAD9 -> handleValueKey(9, event);
+            case A -> handleValueKey(10, event);
+            case B -> handleValueKey(11, event);
+            case C -> handleValueKey(12, event);
+            case D -> handleValueKey(13, event);
+            case E -> handleValueKey(14, event);
+            case F -> handleValueKey(15, event);
+            case G -> handleValueKey(16, event);
+            case DELETE, BACK_SPACE -> { gridPane.placeNumber(Puzzle.NO_VALUE); event.consume(); }
+            default -> {}
+        }
+    }
+
+    private void handleValueKey(int value, KeyEvent event) {
+        if (value >= currentPuzzleType.getMinValue() && value <= currentPuzzleType.getMaxValue()) {
+            gridPane.placeNumber(value);
+            event.consume();
         }
     }
 

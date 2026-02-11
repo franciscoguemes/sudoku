@@ -52,8 +52,8 @@ public class GameGridPane extends StackPane {
     public void displayPuzzle(Puzzle puzzle, Puzzle solution) {
         this.puzzle = puzzle;
         this.solution = solution;
-        this.selectedRow = -1;
-        this.selectedCol = -1;
+        this.selectedRow = 0;
+        this.selectedCol = 0;
         int rows = puzzle.getPuzzleType().getRows();
         int cols = puzzle.getPuzzleType().getColumns();
         this.wrongValues = new int[rows][cols];
@@ -179,6 +179,16 @@ public class GameGridPane extends StackPane {
             }
         }
 
+        refresh();
+    }
+
+    public void moveSelection(int deltaRow, int deltaCol) {
+        if (puzzle == null) return;
+        PuzzleType type = puzzle.getPuzzleType();
+        int newRow = Math.clamp(selectedRow + deltaRow, 0, type.getRows() - 1);
+        int newCol = Math.clamp(selectedCol + deltaCol, 0, type.getColumns() - 1);
+        selectedRow = newRow;
+        selectedCol = newCol;
         refresh();
     }
 
