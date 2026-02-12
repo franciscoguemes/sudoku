@@ -16,7 +16,7 @@ public class Generator {
         int[] possibleValues = getPossibleValuesInPuzzle(copy);
         List<Integer> notUsedValidValues = new ArrayList<>(Arrays.stream(possibleValues).boxed().toList());
 
-        for(int r = 0; r < copy.getPuzzleType().getRows(); r++) {
+        for(int r = 0; r < puzzleType.getRows(); r++) {
             int randomValue = randomGenerator.nextInt(notUsedValidValues.size());
             copy.makeMove(r, 0, notUsedValidValues.get(randomValue), true);
             notUsedValidValues.remove(randomValue);
@@ -68,7 +68,7 @@ public class Generator {
             for(int i = 0;i < possibleValues.length;i++) {
 
                 //if the current number works in the space
-                if(!puzzle.numInRow(r, possibleValues[i]) && !puzzle.numInCol(c,possibleValues[i]) && !puzzle.numInBox(r,c,possibleValues[i])) {
+                if(puzzle.isValidMove(r,c,possibleValues[i])){
 
                     //make the move
                     puzzle.makeMove(r, c, possibleValues[i], true);
@@ -79,19 +79,16 @@ public class Generator {
                     }
 
                     //go to next move
-                    if(r == puzzle.getPuzzleType().getRows() - 1) {
+                    if(puzzle.isLastRow(r)) {
                         if(backtrackSudokuSolver(0,c + 1,puzzle)) return true;
                     } else {
                         if(backtrackSudokuSolver(r + 1,c,puzzle)) return true;
                     }
                 }
             }
-        }
-
-        //if the current space is not empty
-        else {
+        } else {  //if the current space is not empty
             //got to the next move
-            if(r == puzzle.getPuzzleType().getRows() - 1) {
+            if(puzzle.isLastRow(r)) {
                 return backtrackSudokuSolver(0,c + 1,puzzle);
             } else {
                 return backtrackSudokuSolver(r + 1,c,puzzle);
