@@ -3,28 +3,27 @@ package com.franciscoguemes.sudoku.io;
 import com.franciscoguemes.sudoku.model.Puzzle;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public interface PuzzleReader {
+public interface PuzzleWriter {
 
-    Puzzle read(InputStream inputStream) throws IOException;
+    void write(Puzzle puzzle, OutputStream outputStream) throws IOException;
 
-    default Puzzle read(Path filePath) throws IOException {
-        try (InputStream is = Files.newInputStream(filePath)) {
-            return read(is);
+    default void write(Puzzle puzzle, Path filePath) throws IOException {
+        try (OutputStream os = Files.newOutputStream(filePath)) {
+            write(puzzle, os);
         }
     }
 
-    static PuzzleReader getReaderForFile(Path filePath) throws IOException {
+    static PuzzleWriter getWriterForFile(Path filePath) throws IOException {
         String fileName = filePath.getFileName().toString().toLowerCase();
         if (fileName.endsWith(CsvFormatConstants.EXTENSION)) {
-            return new CsvFormatPuzzleReader();
+            return new CsvFormatPuzzleWriter();
         } else if (fileName.endsWith(SudokuFormatConstants.EXTENSION)) {
-            return new SudokuFormatPuzzleReader();
+            return new SudokuFormatPuzzleWriter();
         }
-
         throw new IOException("Unsupported file format: " + filePath.getFileName()
                 + ". Supported formats: " + CsvFormatConstants.EXTENSION + ", " + SudokuFormatConstants.EXTENSION);
     }

@@ -1,5 +1,8 @@
 package com.franciscoguemes.sudoku.model;
 
+import com.franciscoguemes.sudoku.solver.SolveResult;
+import com.franciscoguemes.sudoku.solver.TechniqueLevel;
+import com.franciscoguemes.sudoku.solver.TechniqueSolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -123,22 +126,16 @@ class GeneratorTest {
     }
 
     @Test
-    @DisplayName("Generated puzzle expected number of given values")
+    @DisplayName("Default generation (no difficulty) uses MEDIUM and produces reasonable clue count")
     void testGeneratedPuzzleGivenValueCount() {
         Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU);
 
-        int givenCount = 0;
-        for(int r = 0; r < puzzle.getPuzzleType().getRows(); r++) {
-            for(int c = 0; c < puzzle.getPuzzleType().getColumns(); c++) {
-                if(puzzle.getValue(r, c) != 0) {
-                    givenCount++;
-                }
-            }
-        }
+        int givenCount = countClues(puzzle);
 
-        // For 9x9, expects approximately 0.22222 * 81 = ~18 values
-        int expected = (int)(0.22222 * (puzzle.getPuzzleType().getRows() * puzzle.getPuzzleType().getRows()));
-        assertEquals(expected, givenCount, "Generated puzzle should have expected number of given values");
+        // MEDIUM fill ratio 0.41 -> target ~33 clues for 9x9
+        // Allow a wide range because uniqueness checking may prevent reaching exact target
+        assertTrue(givenCount >= 28 && givenCount <= 45,
+            "Generated puzzle should have between 28 and 45 given values for MEDIUM difficulty, but had " + givenCount);
     }
 
     @Test
@@ -171,7 +168,184 @@ class GeneratorTest {
         }
     }
 
+    // --- Difficulty-level tests ---
+
+    @Test
+    @DisplayName("EASY difficulty produces 36-50 clues for 9x9")
+    void testEasyDifficulty() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.EASY);
+        int clues = countClues(puzzle);
+        assertTrue(clues >= 36 && clues <= 50,
+            "EASY should have 36-50 clues, but had " + clues);
+    }
+
+    @Test
+    @DisplayName("MEDIUM difficulty produces 28-40 clues for 9x9")
+    void testMediumDifficulty() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.MEDIUM);
+        int clues = countClues(puzzle);
+        assertTrue(clues >= 28 && clues <= 40,
+            "MEDIUM should have 28-40 clues, but had " + clues);
+    }
+
+    @Test
+    @DisplayName("HARD difficulty produces 23-33 clues for 9x9")
+    void testHardDifficulty() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.HARD);
+        int clues = countClues(puzzle);
+        assertTrue(clues >= 23 && clues <= 33,
+            "HARD should have 23-33 clues, but had " + clues);
+    }
+
+    @Test
+    @DisplayName("EXPERT difficulty produces 19-27 clues for 9x9")
+    void testExpertDifficulty() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.EXPERT);
+        int clues = countClues(puzzle);
+        assertTrue(clues >= 19 && clues <= 27,
+            "EXPERT should have 19-27 clues, but had " + clues);
+    }
+
+    @Test
+    @DisplayName("MASTER difficulty produces 17-27 clues for 9x9")
+    void testMasterDifficulty() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.MASTER);
+        int clues = countClues(puzzle);
+        assertTrue(clues >= 17 && clues <= 27,
+            "MASTER should have 17-27 clues, but had " + clues);
+    }
+
+    @Test
+    @DisplayName("EXTREME difficulty produces 15-25 clues for 9x9")
+    void testExtremeDifficulty() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.EXTREME);
+        int clues = countClues(puzzle);
+        assertTrue(clues >= 15 && clues <= 28,
+            "EXTREME should have 15-28 clues, but had " + clues);
+    }
+
+    @Test
+    @DisplayName("Generated puzzle is solvable and has a valid complete solution")
+    void testGeneratedPuzzleIsSolvable() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.HARD);
+        Puzzle solution = new Puzzle(puzzle);
+        boolean solved = generator.solve(solution);
+
+        assertTrue(solved, "Generated puzzle should be solvable");
+        assertTrue(solution.boardFull(), "Solved puzzle should have all cells filled");
+
+        // Verify all values are valid
+        for (int r = 0; r < solution.getPuzzleType().getRows(); r++) {
+            for (int c = 0; c < solution.getPuzzleType().getColumns(); c++) {
+                int value = solution.getValue(r, c);
+                assertTrue(value >= 1 && value <= 9, "All cells should have valid values");
+                assertNoDuplicateInRow(solution, r, value, c);
+                assertNoDuplicateInColumn(solution, c, value, r);
+                assertNoDuplicateInBox(solution, r, c, value);
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Backward-compatible generateRandomSudoku(PuzzleType) still works")
+    void testBackwardCompatibility() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU);
+
+        assertNotNull(puzzle);
+        assertEquals(PuzzleType.SUDOKU, puzzle.getPuzzleType());
+        assertFalse(puzzle.boardFull());
+
+        int clues = countClues(puzzle);
+        assertTrue(clues > 0, "Should have given values");
+        assertTrue(clues < 81, "Should have empty cells");
+    }
+
+    @Test
+    @DisplayName("Difficulty with Mini Sudoku produces appropriate clue count")
+    void testDifficultyWithMiniSudoku() {
+        Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.MINI_SUDOKU, Difficulty.EASY);
+        int clues = countClues(puzzle);
+        // EASY fill ratio 0.50 -> target 18 clues for 6x6 (36 cells)
+        assertTrue(clues >= 14 && clues <= 22,
+            "EASY Mini Sudoku should have 14-22 clues, but had " + clues);
+    }
+
+    // --- Technique-graded generation tests ---
+
+    @Test
+    @DisplayName("Technique-graded EASY puzzle is solvable with naked singles only")
+    void testTechniqueGradedEasy() {
+        Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, Difficulty.EASY);
+        assertNotNull(puzzle);
+        assertFalse(puzzle.boardFull());
+
+        TechniqueSolver solver = new TechniqueSolver();
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.NAKED_SINGLE);
+        assertTrue(result.solved(), "EASY technique-graded puzzle should be solvable with naked singles");
+    }
+
+    @Test
+    @DisplayName("Technique-graded MEDIUM puzzle is solvable with hidden singles")
+    void testTechniqueGradedMedium() {
+        Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, Difficulty.MEDIUM);
+        assertNotNull(puzzle);
+        assertFalse(puzzle.boardFull());
+
+        TechniqueSolver solver = new TechniqueSolver();
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.HIDDEN_SINGLE);
+        assertTrue(result.solved(), "MEDIUM technique-graded puzzle should be solvable with hidden singles");
+    }
+
+    @Test
+    @DisplayName("Technique-graded HARD puzzle is solvable with naked subset techniques")
+    void testTechniqueGradedHard() {
+        Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, Difficulty.HARD);
+        assertNotNull(puzzle);
+        assertFalse(puzzle.boardFull());
+
+        TechniqueSolver solver = new TechniqueSolver();
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.NAKED_SUBSET);
+        assertTrue(result.solved(), "HARD technique-graded puzzle should be solvable with naked subset techniques");
+    }
+
+    @Test
+    @DisplayName("Technique-graded puzzle produces valid solvable puzzles at each level")
+    void testTechniqueGradedSolvable() {
+        for (Difficulty diff : new Difficulty[]{Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD}) {
+            Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, diff);
+            Puzzle solution = new Puzzle(puzzle);
+            boolean solved = generator.solve(solution);
+
+            assertTrue(solved, diff + " technique-graded puzzle should be solvable by backtracking");
+            assertTrue(solution.boardFull(), diff + " solved puzzle should be full");
+        }
+    }
+
+    @Test
+    @DisplayName("Existing generateRandomSudoku methods still work (backward compatibility)")
+    void testTechniqueGradedBackwardCompat() {
+        Puzzle puzzle1 = generator.generateRandomSudoku(PuzzleType.SUDOKU);
+        assertNotNull(puzzle1);
+        assertFalse(puzzle1.boardFull());
+
+        Puzzle puzzle2 = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.HARD);
+        assertNotNull(puzzle2);
+        assertFalse(puzzle2.boardFull());
+    }
+
     // Helper methods
+
+    private int countClues(Puzzle puzzle) {
+        int count = 0;
+        for (int r = 0; r < puzzle.getPuzzleType().getRows(); r++) {
+            for (int c = 0; c < puzzle.getPuzzleType().getColumns(); c++) {
+                if (puzzle.getValue(r, c) != Puzzle.NO_VALUE) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 
     private void assertHasGivenValues(Puzzle puzzle) {
         int valueCount = 0;

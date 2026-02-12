@@ -1,11 +1,12 @@
 package com.franciscoguemes.sudoku.model;
 
+import java.util.Arrays;
+
 public class Puzzle {
 
     public static final int NO_VALUE = 0;
 
     protected int [][] board;
-    // Table to determine if a slot is mutable
     protected boolean [][] mutable;
     private final PuzzleType puzzleType;
 
@@ -18,6 +19,20 @@ public class Puzzle {
         initializeMutableSlots();
     }
 
+    private void initializeBoard() {
+        final int ROWS = puzzleType.getRows();
+        for (int row = 0; row < ROWS; row++) {
+            Arrays.fill(this.board[row], NO_VALUE);
+        }
+    }
+
+    private void initializeMutableSlots() {
+        final int ROWS = puzzleType.getRows();
+        for (int row = 0; row < ROWS; row++) {
+            Arrays.fill(this.mutable[row], true);
+        }
+    }
+
     public Puzzle(Puzzle puzzle) {
         this.puzzleType = puzzle.getPuzzleType();
         copyBoard(puzzle);
@@ -26,17 +41,14 @@ public class Puzzle {
     private void copyBoard(Puzzle puzzle) {
         final int ROWS = puzzleType.getRows();
         final int COLUMNS = puzzleType.getColumns();
+
         this.board = new int[ROWS][COLUMNS];
-        for(int r = 0;r < ROWS;r++) {
-            for(int c = 0;c < COLUMNS;c++) {
-                board[r][c] = puzzle.board[r][c];
-            }
-        }
         this.mutable = new boolean[ROWS][COLUMNS];
-        for(int r = 0;r < ROWS;r++) {
-            for(int c = 0;c < COLUMNS;c++) {
-                this.mutable[r][c] = puzzle.mutable[r][c];
-            }
+
+        for(int r = 0; r < ROWS; r++) {
+            // Bulk copy entire rows
+            System.arraycopy(puzzle.board[r], 0, this.board[r], 0, COLUMNS);
+            System.arraycopy(puzzle.mutable[r], 0, this.mutable[r], 0, COLUMNS);
         }
     }
 
@@ -52,55 +64,48 @@ public class Puzzle {
     }
 
     public boolean isValidMove(int row,int col,int value) {
-        if(this.inRange(row,col)) {
-            if(!this.numInCol(col,value) && !this.numInRow(row,value) && !this.numInBox(row,col,value)) {
+        return !this.numInCol(col, value) && !this.numInRow(row, value) && !this.numInBox(row, col, value);
+    }
+
+    public boolean numInCol(int col, int value) {
+        if (!isValidColumnIndex(col)) return false;
+        final int ROWS = puzzleType.getRows();
+
+        for (int row = 0; row < ROWS; row++) {
+            if (this.board[row][col] == value) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean numInCol(int col,int value) {
-        final int ROWS = puzzleType.getRows();
+    public boolean numInRow(int row, int value) {
+        if (!isValidRowIndex(row)) return false;
         final int COLUMNS = puzzleType.getColumns();
-        if(col < COLUMNS) {
-            for(int row=0;row < ROWS;row++) {
-                if(this.board[row][col]==value) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
-    public boolean numInRow(int row,int value) {
-        final int ROWS = puzzleType.getRows();
-        final int COLUMNS = puzzleType.getColumns();
-        if(row < ROWS) {
-            for(int col=0;col < COLUMNS;col++) {
-                if(this.board[row][col]==value) {
-                    return true;
-                }
+        for (int col = 0; col < COLUMNS; col++) {
+            if (this.board[row][col] == value) {
+                return true;
             }
         }
         return false;
     }
 
     public boolean numInBox(int row,int col,int value) {
-        final int BOXHEIGHT = puzzleType.getBoxHeight();
-        final int BOXWIDTH = puzzleType.getBoxWidth();
-        if(this.inRange(row, col)) {
-            int boxRow = row / BOXHEIGHT;
-            int boxCol = col / BOXWIDTH;
 
-            int startingRow = (boxRow*BOXHEIGHT);
-            int startingCol = (boxCol*BOXWIDTH);
+        final int BOX_HEIGHT = puzzleType.getBoxHeight();
+        final int BOX_WIDTH = puzzleType.getBoxWidth();
 
-            for(int r = startingRow;r <= (startingRow+BOXHEIGHT)-1;r++) {
-                for(int c = startingCol;c <= (startingCol+BOXWIDTH)-1;c++) {
-                    if(this.board[r][c]==value) {
-                        return true;
-                    }
+        int boxRow = row / BOX_HEIGHT;
+        int boxCol = col / BOX_WIDTH;
+
+        int startingRow = (boxRow * BOX_HEIGHT);
+        int startingCol = (boxCol * BOX_WIDTH);
+
+        for (int r = startingRow; r <= (startingRow + BOX_HEIGHT) - 1; r++) {
+            for (int c = startingCol; c <= (startingCol + BOX_WIDTH) - 1; c++) {
+                if (this.board[r][c] == value) {
+                    return true;
                 }
             }
         }
@@ -108,7 +113,7 @@ public class Puzzle {
     }
 
     public boolean isSlotAvailable(int row,int col) {
-        return (this.inRange(row,col) && this.board[row][col]==NO_VALUE && this.isSlotMutable(row, col));
+        return (this.board[row][col]==NO_VALUE && this.isSlotMutable(row, col));
     }
 
     public boolean isSlotMutable(int row,int col) {
@@ -116,10 +121,7 @@ public class Puzzle {
     }
 
     public int getValue(int row,int col) {
-        if(this.inRange(row,col)) {
-            return this.board[row][col];
-        }
-        return NO_VALUE;
+        return this.board[row][col];
     }
 
     public int [][] getBoard() {
@@ -136,10 +138,22 @@ public class Puzzle {
         return value >= puzzleType.getMinValue() && value <= puzzleType.getMaxValue();
     }
 
-    public boolean inRange(int row,int col) {
+    private boolean isValidRowIndex(int row){
         final int ROWS = puzzleType.getRows();
+        return row<ROWS && row>=0;
+    }
+
+    private boolean isValidColumnIndex(int col){
         final int COLUMNS = puzzleType.getColumns();
-        return row < ROWS && col < COLUMNS && row >= 0 && col >= 0;
+        return col < COLUMNS && col>=0;
+    }
+
+    public boolean inRange(int row,int col) {
+        return isValidRowIndex(row) && isValidColumnIndex(col);
+    }
+
+    public boolean isLastRow(int row){
+        return row == this.getPuzzleType().getRows() - 1;
     }
 
     public boolean boardFull() {
@@ -174,23 +188,4 @@ public class Puzzle {
         return sb.toString();
     }
 
-    private void initializeBoard() {
-        final int ROWS = puzzleType.getRows();
-        final int COLUMNS = puzzleType.getColumns();
-        for(int row = 0;row < ROWS;row++) {
-            for(int col = 0;col < COLUMNS;col++) {
-                this.board[row][col] = NO_VALUE;
-            }
-        }
-    }
-
-    private void initializeMutableSlots() {
-        final int ROWS = puzzleType.getRows();
-        final int COLUMNS = puzzleType.getColumns();
-        for(int row = 0;row < ROWS;row++) {
-            for(int col = 0;col < COLUMNS;col++) {
-                this.mutable[row][col] = true;
-            }
-        }
-    }
 }

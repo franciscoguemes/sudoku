@@ -3,6 +3,8 @@ package com.franciscoguemes.sudoku.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -153,13 +155,17 @@ class PuzzleTest {
         assertEquals(0, standardPuzzle.getValue(0, 0));
     }
 
-    @Test
-    @DisplayName("getValue returns NO_VALUE for out of range")
-    void testGetValueOutOfRange() {
-        assertEquals(0, standardPuzzle.getValue(-1, 0));
-        assertEquals(0, standardPuzzle.getValue(0, -1));
-        assertEquals(0, standardPuzzle.getValue(9, 0));
-        assertEquals(0, standardPuzzle.getValue(0, 9));
+    @ParameterizedTest
+    @CsvSource({
+            "-1, 0",
+            "0, -1",
+            "9, 0",
+            "0, 9"
+    })
+    @DisplayName("getValue throws ArrayIndexOutOfBoundsException for out of range coordinates")
+    void testGetValueOutOfRane(int row, int col) {
+        assertThrows(ArrayIndexOutOfBoundsException.class,
+                () -> standardPuzzle.getValue(row, col));
     }
 
     @Test
