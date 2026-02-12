@@ -75,6 +75,7 @@ Please note that the changes performed by the erase functionality must be undone
 - If the cell contained notes, all notes will be restored at once.
 
 ---
+
 # Number exhaustion
 
 I would like you to add the following feature to the GameApp. Once a number has been filled in all possible areas in the
@@ -83,3 +84,17 @@ board (row, columns, boxes) the button corresponding to that number must become 
 filled everywhere
 possible in the
 board therefore in the right panel the button corresponding to the number "4" must be disabled.
+
+---
+
+# Update notes on peers
+
+Once a correct number has been filled in the board (this does not apply for wrong numbers) the notes for all cells in
+the same row, column and box must be updated. E.g. You can see in the image below
+![update notes after input](/documentation/images/UI_update_notes_after_input.png) that the number "4" has been inserted
+in the cell with coordinates (4,8), therefore the notes in all the highlighted cells must be updated and any annotated "
+4" in any of those cells must be deleted. In the picture you can see that the cell with coordinates (5,5) contains an 
+annotated "4" that must be deleted.
+
+Please bear in mind that if the user then clicks the "Undo" button, all the notes automatically updated will not be
+restored, only the previous values/notes for that cell will be restored.
