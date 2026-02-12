@@ -50,7 +50,7 @@ TODOs
 - [x] Technique based grades of sudoku generation
 - [x] Numbers exhaustion: When a number is completed in all areas of the board, the button with the number is disabled
   in the numbers panel.
-- [ ] Update notes after input (if value is valid)
+- [x] Update notes after input (if value is valid)
 - [ ] Timer functionality
 - [ ] Hints button
 - [ ] Score tracking. The user will get points for each empty cell in the board that he completes successfully. The

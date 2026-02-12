@@ -111,6 +111,7 @@ public class GameGridPane extends StackPane {
         int correctValue = solution.getValue(selectedRow, selectedCol);
         if (value == correctValue) {
             puzzle.makeMove(selectedRow, selectedCol, value, true);
+            removeNoteFromPeers(selectedRow, selectedCol, value);
         } else {
             wrongValues[selectedRow][selectedCol] = value;
             if (onWrongMove != null) {
@@ -166,6 +167,31 @@ public class GameGridPane extends StackPane {
         undoStack.push(new UndoEntry.NoteToggle(selectedRow, selectedCol, value, wasAdded));
 
         refresh();
+    }
+
+    private void removeNoteFromPeers(int row, int col, int value) {
+        PuzzleType type = puzzle.getPuzzleType();
+
+        // Same row
+        for (int c = 0; c < type.getColumns(); c++) {
+            if (c != col) notes[row][c].remove(value);
+        }
+
+        // Same column
+        for (int r = 0; r < type.getRows(); r++) {
+            if (r != row) notes[r][col].remove(value);
+        }
+
+        // Same box
+        int boxHeight = type.getBoxHeight();
+        int boxWidth = type.getBoxWidth();
+        int startRow = (row / boxHeight) * boxHeight;
+        int startCol = (col / boxWidth) * boxWidth;
+        for (int r = startRow; r < startRow + boxHeight; r++) {
+            for (int c = startCol; c < startCol + boxWidth; c++) {
+                if (r != row || c != col) notes[r][c].remove(value);
+            }
+        }
     }
 
     public void setNotesMode(boolean notesMode) {
