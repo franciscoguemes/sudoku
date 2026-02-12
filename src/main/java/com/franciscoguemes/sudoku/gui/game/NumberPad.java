@@ -1,5 +1,6 @@
 package com.franciscoguemes.sudoku.gui.game;
 
+import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
 import com.franciscoguemes.sudoku.util.ValueFormatter;
 import javafx.geometry.Insets;
@@ -9,14 +10,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.IntConsumer;
 
 public class NumberPad extends GridPane {
 
     private static final String BUTTON_BG = "#E8EAF6";
     private static final String BUTTON_TEXT = "#1A237E";
+    private static final String BUTTON_DISABLED_BG = "#F5F5F5";
+    private static final String BUTTON_DISABLED_TEXT = "#BDBDBD";
 
     private IntConsumer onNumberSelected;
+    private final Map<Integer, Button> buttons = new HashMap<>();
 
     public NumberPad() {
         setAlignment(Pos.CENTER);
@@ -28,6 +34,7 @@ public class NumberPad extends GridPane {
 
     public void buildForType(PuzzleType type) {
         getChildren().clear();
+        buttons.clear();
 
         int min = type.getMinValue();
         int max = type.getMaxValue();
@@ -70,6 +77,7 @@ public class NumberPad extends GridPane {
                 }
             });
 
+            buttons.put(v, btn);
             add(btn, c, r);
             c++;
             if (c >= cols) {
@@ -77,6 +85,48 @@ public class NumberPad extends GridPane {
                 r++;
             }
         }
+    }
+
+    public void updateExhaustedNumbers(Puzzle puzzle) {
+        if (puzzle == null) return;
+        PuzzleType type = puzzle.getPuzzleType();
+        int maxCount = type.getRows(); // each value appears exactly N times in a solved NxN puzzle
+
+        for (var entry : buttons.entrySet()) {
+            int value = entry.getKey();
+            Button btn = entry.getValue();
+            int count = countValueInPuzzle(puzzle, value);
+            boolean exhausted = count >= maxCount;
+            btn.setDisable(exhausted);
+            if (exhausted) {
+                btn.setStyle(
+                        "-fx-background-color: " + BUTTON_DISABLED_BG + ";" +
+                        "-fx-text-fill: " + BUTTON_DISABLED_TEXT + ";" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-opacity: 0.6;"
+                );
+            } else {
+                btn.setStyle(
+                        "-fx-background-color: " + BUTTON_BG + ";" +
+                        "-fx-text-fill: " + BUTTON_TEXT + ";" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-cursor: hand;"
+                );
+            }
+        }
+    }
+
+    private int countValueInPuzzle(Puzzle puzzle, int value) {
+        int count = 0;
+        PuzzleType type = puzzle.getPuzzleType();
+        for (int r = 0; r < type.getRows(); r++) {
+            for (int c = 0; c < type.getColumns(); c++) {
+                if (puzzle.getValue(r, c) == value) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public void setOnNumberSelected(IntConsumer handler) {
