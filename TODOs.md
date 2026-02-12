@@ -51,7 +51,7 @@ TODOs
 - [x] Numbers exhaustion: When a number is completed in all areas of the board, the button with the number is disabled
   in the numbers panel.
 - [x] Update notes after input (if value is valid)
-- [ ] Timer functionality
+- [x] Timer functionality
 - [ ] Hints button
 - [ ] Score tracking. The user will get points for each empty cell in the board that he completes successfully. The
   score may vary depending on the difficulty of the puzzle. For the category Easy will be 10 points per cell and for the
