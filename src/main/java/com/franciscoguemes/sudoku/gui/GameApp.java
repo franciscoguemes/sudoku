@@ -131,7 +131,7 @@ public class GameApp extends Application {
 
     private void generateNewPuzzle() {
         Generator generator = new Generator();
-        Puzzle puzzle = generator.generateRandomSudoku(currentPuzzleType, currentDifficulty);
+        Puzzle puzzle = generator.generateTechniqueGradedSudoku(currentPuzzleType, currentDifficulty);
         Puzzle solution = new Puzzle(puzzle);
         generator.solve(solution);
         gridPane.displayPuzzle(puzzle, solution);

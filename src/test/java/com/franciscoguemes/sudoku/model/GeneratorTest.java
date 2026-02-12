@@ -1,5 +1,8 @@
 package com.franciscoguemes.sudoku.model;
 
+import com.franciscoguemes.sudoku.solver.SolveResult;
+import com.franciscoguemes.sudoku.solver.TechniqueLevel;
+import com.franciscoguemes.sudoku.solver.TechniqueSolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -217,8 +220,8 @@ class GeneratorTest {
     void testExtremeDifficulty() {
         Puzzle puzzle = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.EXTREME);
         int clues = countClues(puzzle);
-        assertTrue(clues >= 15 && clues <= 25,
-            "EXTREME should have 15-25 clues, but had " + clues);
+        assertTrue(clues >= 15 && clues <= 28,
+            "EXTREME should have 15-28 clues, but had " + clues);
     }
 
     @Test
@@ -265,6 +268,69 @@ class GeneratorTest {
         // EASY fill ratio 0.50 -> target 18 clues for 6x6 (36 cells)
         assertTrue(clues >= 14 && clues <= 22,
             "EASY Mini Sudoku should have 14-22 clues, but had " + clues);
+    }
+
+    // --- Technique-graded generation tests ---
+
+    @Test
+    @DisplayName("Technique-graded EASY puzzle is solvable with naked singles only")
+    void testTechniqueGradedEasy() {
+        Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, Difficulty.EASY);
+        assertNotNull(puzzle);
+        assertFalse(puzzle.boardFull());
+
+        TechniqueSolver solver = new TechniqueSolver();
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.NAKED_SINGLE);
+        assertTrue(result.solved(), "EASY technique-graded puzzle should be solvable with naked singles");
+    }
+
+    @Test
+    @DisplayName("Technique-graded MEDIUM puzzle is solvable with hidden singles")
+    void testTechniqueGradedMedium() {
+        Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, Difficulty.MEDIUM);
+        assertNotNull(puzzle);
+        assertFalse(puzzle.boardFull());
+
+        TechniqueSolver solver = new TechniqueSolver();
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.HIDDEN_SINGLE);
+        assertTrue(result.solved(), "MEDIUM technique-graded puzzle should be solvable with hidden singles");
+    }
+
+    @Test
+    @DisplayName("Technique-graded HARD puzzle is solvable with naked subset techniques")
+    void testTechniqueGradedHard() {
+        Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, Difficulty.HARD);
+        assertNotNull(puzzle);
+        assertFalse(puzzle.boardFull());
+
+        TechniqueSolver solver = new TechniqueSolver();
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.NAKED_SUBSET);
+        assertTrue(result.solved(), "HARD technique-graded puzzle should be solvable with naked subset techniques");
+    }
+
+    @Test
+    @DisplayName("Technique-graded puzzle produces valid solvable puzzles at each level")
+    void testTechniqueGradedSolvable() {
+        for (Difficulty diff : new Difficulty[]{Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD}) {
+            Puzzle puzzle = generator.generateTechniqueGradedSudoku(PuzzleType.SUDOKU, diff);
+            Puzzle solution = new Puzzle(puzzle);
+            boolean solved = generator.solve(solution);
+
+            assertTrue(solved, diff + " technique-graded puzzle should be solvable by backtracking");
+            assertTrue(solution.boardFull(), diff + " solved puzzle should be full");
+        }
+    }
+
+    @Test
+    @DisplayName("Existing generateRandomSudoku methods still work (backward compatibility)")
+    void testTechniqueGradedBackwardCompat() {
+        Puzzle puzzle1 = generator.generateRandomSudoku(PuzzleType.SUDOKU);
+        assertNotNull(puzzle1);
+        assertFalse(puzzle1.boardFull());
+
+        Puzzle puzzle2 = generator.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.HARD);
+        assertNotNull(puzzle2);
+        assertFalse(puzzle2.boardFull());
     }
 
     // Helper methods

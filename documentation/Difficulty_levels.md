@@ -69,3 +69,38 @@ puzzles. The implementation would be:
 4. If removing a cell creates multiple solutions, put it back and try another
 
 Later, if you want more accurate grading, you can layer Option 3 on top as a validation/scoring step — generate with clue counts, then score the result and regenerate if it doesn't match the target difficulty.
+
+
+---
+
+Solver Foundation (com.franciscoguemes.sudoku.solver):
+- TechniqueLevel.java — Enum with 6 difficulty tiers (NAKED_SINGLE through BACKTRACKING)
+- SolvingTechnique.java — Interface for all techniques
+- SolveResult.java — Record holding solve outcome and hardest technique used
+- CandidateGrid.java — Core data structure wrapping a Puzzle with per-cell candidate sets
+- TechniqueSolver.java — Orchestrator that applies techniques in order, always restarting from easiest after progress
+
+10 Solving Techniques (com.franciscoguemes.sudoku.solver.techniques):
+┌──────────────────┬────────┬──────────────────────────────────────────────┐
+│    Technique     │ Level  │                   Strategy                   │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ NakedSingle      │ EASY   │ Cell with exactly 1 candidate                │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ HiddenSingle     │ MEDIUM │ Value that fits in only 1 cell in a region   │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ NakedPair        │ HARD   │ 2 cells sharing same 2-candidate set         │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ NakedTriple      │ HARD   │ 3 cells whose union = 3 candidates           │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ PointingPair     │ HARD   │ Box candidates confined to one row/col       │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ BoxLineReduction │ EXPERT │ Row/col candidates confined to one box       │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ XWing            │ EXPERT │ 2 rows with candidate in same 2 columns      │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ Swordfish        │ EXPERT │ 3-row extension of X-Wing                    │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ XYWing           │ MASTER │ Pivot + 2 wings eliminating shared candidate │
+├──────────────────┼────────┼──────────────────────────────────────────────┤
+│ UniqueRectangle  │ MASTER │ Type 1 deadly pattern avoidance              │
+└──────────────────┴────────┴──────────────────────────────────────────────┘

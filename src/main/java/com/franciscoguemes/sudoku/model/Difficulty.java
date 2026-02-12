@@ -1,5 +1,7 @@
 package com.franciscoguemes.sudoku.model;
 
+import com.franciscoguemes.sudoku.solver.TechniqueLevel;
+
 public enum Difficulty {
     EASY(0.50, "Easy"),
     MEDIUM(0.41, "Medium"),
@@ -26,5 +28,16 @@ public enum Difficulty {
 
     public int getTargetClueCount(PuzzleType type) {
         return (int) (fillRatio * type.getRows() * type.getColumns());
+    }
+
+    public TechniqueLevel getTechniqueLevel() {
+        return switch (this) {
+            case EASY -> TechniqueLevel.NAKED_SINGLE;
+            case MEDIUM -> TechniqueLevel.HIDDEN_SINGLE;
+            case HARD -> TechniqueLevel.NAKED_SUBSET;
+            case EXPERT -> TechniqueLevel.FISH_AND_REDUCTION;
+            case MASTER -> TechniqueLevel.ADVANCED;
+            case EXTREME -> TechniqueLevel.BACKTRACKING;
+        };
     }
 }

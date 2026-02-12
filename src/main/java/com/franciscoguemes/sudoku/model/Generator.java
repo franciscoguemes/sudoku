@@ -1,5 +1,9 @@
 package com.franciscoguemes.sudoku.model;
 
+import com.franciscoguemes.sudoku.solver.SolveResult;
+import com.franciscoguemes.sudoku.solver.TechniqueLevel;
+import com.franciscoguemes.sudoku.solver.TechniqueSolver;
+
 import java.util.*;
 
 public class Generator {
@@ -51,6 +55,59 @@ public class Generator {
                 if (value != Puzzle.NO_VALUE) {
                     result.makeMove(r, c, value, false);
                 }
+            }
+        }
+        return result;
+    }
+
+    public Puzzle generateTechniqueGradedSudoku(PuzzleType puzzleType, Difficulty difficulty) {
+        // For EXTREME: use the existing clue-count method (backtracking is allowed)
+        if (difficulty == Difficulty.EXTREME) {
+            return generateRandomSudoku(puzzleType, difficulty);
+        }
+
+        TechniqueSolver solver = new TechniqueSolver();
+        TechniqueLevel maxLevel = difficulty.getTechniqueLevel();
+
+        Puzzle solved = generateFullSolution(puzzleType);
+        int totalCells = puzzleType.getRows() * puzzleType.getColumns();
+
+        List<int[]> positions = new ArrayList<>();
+        for (int r = 0; r < puzzleType.getRows(); r++) {
+            for (int c = 0; c < puzzleType.getColumns(); c++) {
+                positions.add(new int[]{r, c});
+            }
+        }
+        Collections.shuffle(positions);
+
+        for (int[] pos : positions) {
+            int r = pos[0], c = pos[1];
+            int savedValue = solved.getValue(r, c);
+            if (savedValue == Puzzle.NO_VALUE) continue;
+
+            solved.makeSlotEmpty(r, c);
+
+            // Build a test puzzle with current clues as immutable
+            Puzzle test = buildImmutablePuzzle(puzzleType, solved);
+            SolveResult result = solver.solve(test, maxLevel);
+
+            if (result.solved()) {
+                // Removal is accepted — puzzle is still solvable at this level
+            } else {
+                // Removal makes it too hard — restore
+                solved.makeMove(r, c, savedValue, true);
+            }
+        }
+
+        return buildImmutablePuzzle(puzzleType, solved);
+    }
+
+    private Puzzle buildImmutablePuzzle(PuzzleType type, Puzzle source) {
+        Puzzle result = new Puzzle(type);
+        for (int r = 0; r < type.getRows(); r++) {
+            for (int c = 0; c < type.getColumns(); c++) {
+                int v = source.getValue(r, c);
+                if (v != Puzzle.NO_VALUE) result.makeMove(r, c, v, false);
             }
         }
         return result;
