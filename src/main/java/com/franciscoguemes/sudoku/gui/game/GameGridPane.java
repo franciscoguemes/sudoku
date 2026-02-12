@@ -42,6 +42,7 @@ public class GameGridPane extends StackPane {
     private boolean notesMode;
     private Runnable onWrongMove;
     private Runnable onBoardChanged;
+    private Runnable onPuzzleCompleted;
     private final Deque<UndoEntry> undoStack = new ArrayDeque<>();
 
     public GameGridPane() {
@@ -112,6 +113,11 @@ public class GameGridPane extends StackPane {
         if (value == correctValue) {
             puzzle.makeMove(selectedRow, selectedCol, value, true);
             removeNoteFromPeers(selectedRow, selectedCol, value);
+            if (puzzle.boardFull() && onPuzzleCompleted != null) {
+                refresh();
+                onPuzzleCompleted.run();
+                return;
+            }
         } else {
             wrongValues[selectedRow][selectedCol] = value;
             if (onWrongMove != null) {
@@ -208,6 +214,10 @@ public class GameGridPane extends StackPane {
 
     public void setOnBoardChanged(Runnable handler) {
         this.onBoardChanged = handler;
+    }
+
+    public void setOnPuzzleCompleted(Runnable handler) {
+        this.onPuzzleCompleted = handler;
     }
 
     public void undo() {
