@@ -1,9 +1,6 @@
 package com.franciscoguemes.sudoku.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Generator {
 
@@ -12,14 +9,34 @@ public class Generator {
         Puzzle copy = new Puzzle(puzzle);
 
         Random randomGenerator = new Random();
-
         int[] possibleValues = getPossibleValuesInPuzzle(copy);
-        List<Integer> notUsedValidValues = new ArrayList<>(Arrays.stream(possibleValues).boxed().toList());
 
+        //Initialize first column in the Sudoku
+        List<Integer> valuesNotUsedYet = new ArrayList<>(Arrays.stream(possibleValues).boxed().toList());
         for(int r = 0; r < puzzleType.getRows(); r++) {
-            int randomValue = randomGenerator.nextInt(notUsedValidValues.size());
-            copy.makeMove(r, 0, notUsedValidValues.get(randomValue), true);
-            notUsedValidValues.remove(randomValue);
+            int randomValue = randomGenerator.nextInt(valuesNotUsedYet.size());
+            copy.makeMove(r, 0, valuesNotUsedYet.get(randomValue), true);
+            valuesNotUsedYet.remove(randomValue);
+        }
+
+        //Initialize first row in the Sudoku
+        HashSet<Integer> usedValuesInBox = new HashSet<>();
+        final int BOX_HEIGHT = puzzleType.getBoxHeight();
+        for(int r=0; r<BOX_HEIGHT; r++){
+            usedValuesInBox.add(copy.getValue(r,0));
+        }
+        valuesNotUsedYet = new ArrayList<>(Arrays.stream(possibleValues).filter(value -> !usedValuesInBox.contains(value)).boxed().toList());
+        final int BOX_WIDTH = puzzleType.getBoxWidth();
+        for(int c = 1; c < BOX_WIDTH; c++) {
+            int randomValue = randomGenerator.nextInt(valuesNotUsedYet.size());
+            copy.makeMove(0, c, valuesNotUsedYet.get(randomValue), true);
+            valuesNotUsedYet.remove(randomValue);
+        }
+        valuesNotUsedYet.addAll(usedValuesInBox.stream().filter(value -> value!= copy.getValue(0,0)).toList());
+        for(int c = BOX_WIDTH-1; c < puzzleType.getColumns(); c++) {
+            int randomValue = randomGenerator.nextInt(valuesNotUsedYet.size());
+            copy.makeMove(0, c, valuesNotUsedYet.get(randomValue), true);
+            valuesNotUsedYet.remove(randomValue);
         }
 
         //Bottleneck here need to improve this so that way 16x16 puzzles can be generated
