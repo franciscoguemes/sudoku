@@ -45,6 +45,7 @@ public class GameApp extends Application {
         gridPane = new GameGridPane();
         numberPad = new NumberPad();
         gridPane.setOnWrongMove(this::handleWrongMove);
+        gridPane.setOnBoardChanged(() -> numberPad.updateExhaustedNumbers(gridPane.getPuzzle()));
 
         // Puzzle type selector
         Map<PuzzleType, String> typeItems = new LinkedHashMap<>();

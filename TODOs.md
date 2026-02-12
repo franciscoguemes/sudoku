@@ -36,6 +36,10 @@ TODOs
 ### Project wise
 
 - [x] Add difficulty levels on generation of the Sudoku puzzles
+- [ ] Refactor model package into
+  - [ ] Sudoku: Based class that contains a sudoku ?
+  - [ ] Puzzle: Contains the sudoku plus the solution ?
+  - [ ] Game: Contains the state of the game (Logic + UI => The puzzle, the score, timer, error count, notes, etc ...) ?
 - [ ] Add logging to the app
 - [ ] Launch apps using JBang
 - [ ] Create documentation about the UI
@@ -44,7 +48,7 @@ TODOs
 
 - [x] Difficulty levels
 - [x] Technique based grades of sudoku generation
-- [ ] Numbers exhaustion: When a number is completed in all areas of the board, the button with the number is disabled
+- [x] Numbers exhaustion: When a number is completed in all areas of the board, the button with the number is disabled
   in the numbers panel.
 - [ ] Update notes after input (if value is valid)
 - [ ] Timer functionality

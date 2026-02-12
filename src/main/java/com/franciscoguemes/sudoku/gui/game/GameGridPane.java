@@ -41,6 +41,7 @@ public class GameGridPane extends StackPane {
     private Set<Integer>[][] notes;
     private boolean notesMode;
     private Runnable onWrongMove;
+    private Runnable onBoardChanged;
     private final Deque<UndoEntry> undoStack = new ArrayDeque<>();
 
     public GameGridPane() {
@@ -60,6 +61,7 @@ public class GameGridPane extends StackPane {
         this.notes = createNotesArray(rows, cols);
         this.undoStack.clear();
         rebuild();
+        if (onBoardChanged != null) onBoardChanged.run();
     }
 
     public void refresh() {
@@ -71,6 +73,7 @@ public class GameGridPane extends StackPane {
                 updateCellAppearance(r, c, fontSize);
             }
         }
+        if (onBoardChanged != null) onBoardChanged.run();
     }
 
     public void placeNumber(int value) {
@@ -175,6 +178,10 @@ public class GameGridPane extends StackPane {
 
     public void setOnWrongMove(Runnable handler) {
         this.onWrongMove = handler;
+    }
+
+    public void setOnBoardChanged(Runnable handler) {
+        this.onBoardChanged = handler;
     }
 
     public void undo() {
