@@ -8,7 +8,8 @@ package `gui`. The GUI of the game must be similar to the one in the image `reso
 sub component for the UI of the game, please do it in the package `game`.
 At the moment my game engine has no different levels of difficulty, but you can place the text labels (like in the
 image) anyway since I plan to add the levels in the future.
-Above the labels for the difficulty levels, please add another row of labels with the different types of Sudoku's that my
+Above the labels for the difficulty levels, please add another row of labels with the different types of Sudoku's that
+my
 engine can generate.(See the class `PuzzleType` to see the different types of Sudoku's).
 The functionality of the game must be the following:
 
@@ -56,10 +57,12 @@ behavior.
 When the game starts the cell in the upper left corner of the board must be selected.
 At the moment the dashboard only supports input through the mouse. I would like to add support for the keyboard. The
 player must be able to move across the Sudoku board using the arrows in the keyboard. And then when the user press a key
-that corresponds to a value for that type of Sudoku, the value will be inputted in the Sudoku (or taken as a note in case
+that corresponds to a value for that type of Sudoku, the value will be inputted in the Sudoku (or taken as a note in
+case
 of being in the notes mode).
 
-I would like you to add now the erase functionality. When the user press the "Erase" button the cell is completely empty.
+I would like you to add now the erase functionality. When the user press the "Erase" button the cell is completely
+empty.
 
 - If the cell is immutable (the game started with a value in that cell), then the erase functionality is ignored, that
   cell must never change.
@@ -70,4 +73,13 @@ Please note that the changes performed by the erase functionality must be undone
 
 - If the cell contained a value that the user input, then the value will be restored in the cell.
 - If the cell contained notes, all notes will be restored at once.
- 
+
+---
+# Number exhaustion
+
+I would like you to add the following feature to the GameApp. Once a number has been filled in all possible areas in the
+board (row, columns, boxes) the button corresponding to that number must become unavailable. E.g. In the picture below
+![number exhaustion picture](/documentation/images/UI_disable_number_after_exhaustion.png), the number "4" has been
+filled everywhere
+possible in the
+board therefore in the right panel the button corresponding to the number "4" must be disabled.
