@@ -93,8 +93,46 @@ Once a correct number has been filled in the board (this does not apply for wron
 the same row, column and box must be updated. E.g. You can see in the image below
 ![update notes after input](/documentation/images/UI_update_notes_after_input.png) that the number "4" has been inserted
 in the cell with coordinates (4,8), therefore the notes in all the highlighted cells must be updated and any annotated "
-4" in any of those cells must be deleted. In the picture you can see that the cell with coordinates (5,5) contains an 
+4" in any of those cells must be deleted. In the picture you can see that the cell with coordinates (5,5) contains an
 annotated "4" that must be deleted.
 
 Please bear in mind that if the user then clicks the "Undo" button, all the notes automatically updated will not be
 restored, only the previous values/notes for that cell will be restored.
+
+---
+
+# Timer
+
+In the UI there is a timer. I would like you to implement the timer functionality. When the game starts the timer must
+start and start counting like a clock. The timer will only stop when the game finishes because the board is full.
+
+When the user starts a new game the timer will restart again with the new game.
+
+If the user exhausts the mistakes counter, the timer will not stop. If the user chose to continue the game the timer
+will simply continue.
+
+I want you to place a "Pause" button (if possible with the pause icon ("\u23F8" - ⏸ )) next to the timer (at the right).
+If the user clicks the pause button:
+- The timer will pause and the button will then will take the form of "Resume" button ( if possible with the resume
+  icon ("\u25B6"; // ▶  )).
+- The board will be hidden.
+
+When the user resume the timer (after the timer has been paused):
+- The timer will continue counting the time from its previous instant.
+- The board will be displayed again.
+
+
+  Behavior summary
+  ┌────────────────────────┬───────────────────────────────────┐
+  │         Event          │           Timer action            │
+  ├────────────────────────┼───────────────────────────────────┤
+  │ New game               │ Reset to 00:00, start             │
+  ├────────────────────────┼───────────────────────────────────┤
+  │ Board full (win)       │ Stop                              │
+  ├────────────────────────┼───────────────────────────────────┤
+  │ 3 mistakes (game over) │ Keeps running                     │
+  ├────────────────────────┼───────────────────────────────────┤
+  │ Pause button clicked   │ Pause, hide board                 │
+  ├────────────────────────┼───────────────────────────────────┤
+  │ Resume button clicked  │ Resume from same time, show board │
+  └────────────────────────┴───────────────────────────────────┘
