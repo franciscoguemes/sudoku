@@ -5,6 +5,7 @@ import com.franciscoguemes.sudoku.gui.game.GameToolBar;
 import com.franciscoguemes.sudoku.gui.game.NumberPad;
 import com.franciscoguemes.sudoku.gui.game.SelectorBar;
 import com.franciscoguemes.sudoku.gui.game.StatsPane;
+import com.franciscoguemes.sudoku.model.Difficulty;
 import com.franciscoguemes.sudoku.model.Generator;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
@@ -32,6 +33,7 @@ import java.util.Map;
 public class GameApp extends Application {
 
     private PuzzleType currentPuzzleType = PuzzleType.SUDOKU;
+    private Difficulty currentDifficulty = Difficulty.MEDIUM;
     private Stage primaryStage;
     private GameGridPane gridPane;
     private NumberPad numberPad;
@@ -53,12 +55,12 @@ public class GameApp extends Application {
         typeSelector.setOnSelectionChanged(this::onPuzzleTypeChanged);
 
         // Difficulty selector
-        Map<String, String> diffItems = new LinkedHashMap<>();
-        for (String diff : new String[]{"Easy", "Medium", "Hard", "Expert", "Master", "Extreme"}) {
-            diffItems.put(diff, diff);
+        Map<Difficulty, String> diffItems = new LinkedHashMap<>();
+        for (Difficulty diff : Difficulty.values()) {
+            diffItems.put(diff, diff.getDescription());
         }
-        SelectorBar<String> difficultySelector = new SelectorBar<>("Difficulty:", diffItems, "Extreme");
-        difficultySelector.setOnSelectionChanged(diff -> generateNewPuzzle());
+        SelectorBar<Difficulty> difficultySelector = new SelectorBar<>("Difficulty:", diffItems, Difficulty.EXTREME);
+        difficultySelector.setOnSelectionChanged(this::onDifficultyChanged);
 
         // Stats and tools
         statsPane = new StatsPane();
@@ -122,9 +124,14 @@ public class GameApp extends Application {
         generateNewPuzzle();
     }
 
+    private void onDifficultyChanged(Difficulty difficulty) {
+        currentDifficulty = difficulty;
+        generateNewPuzzle();
+    }
+
     private void generateNewPuzzle() {
         Generator generator = new Generator();
-        Puzzle puzzle = generator.generateRandomSudoku(currentPuzzleType);
+        Puzzle puzzle = generator.generateRandomSudoku(currentPuzzleType, currentDifficulty);
         Puzzle solution = new Puzzle(puzzle);
         generator.solve(solution);
         gridPane.displayPuzzle(puzzle, solution);
