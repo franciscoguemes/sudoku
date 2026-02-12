@@ -46,6 +46,7 @@ public class GameApp extends Application {
         numberPad = new NumberPad();
         gridPane.setOnWrongMove(this::handleWrongMove);
         gridPane.setOnBoardChanged(() -> numberPad.updateExhaustedNumbers(gridPane.getPuzzle()));
+        gridPane.setOnPuzzleCompleted(() -> statsPane.stopTimer());
 
         // Puzzle type selector
         Map<PuzzleType, String> typeItems = new LinkedHashMap<>();
@@ -65,6 +66,7 @@ public class GameApp extends Application {
 
         // Stats and tools
         statsPane = new StatsPane();
+        statsPane.setOnPauseToggled(() -> gridPane.setVisible(!statsPane.isPaused()));
         GameToolBar toolBar = new GameToolBar();
         toolBar.setOnUndo(() -> gridPane.undo());
         toolBar.setOnErase(() -> gridPane.erase());
@@ -136,7 +138,9 @@ public class GameApp extends Application {
         Puzzle solution = new Puzzle(puzzle);
         generator.solve(solution);
         gridPane.displayPuzzle(puzzle, solution);
+        gridPane.setVisible(true);
         statsPane.resetMistakes();
+        statsPane.startTimer();
     }
 
     private void handleWrongMove() {
