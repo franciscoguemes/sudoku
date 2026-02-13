@@ -41,3 +41,18 @@ Verification
 - mvn clean compile — BUILD SUCCESS
 - mvn test (excluding GeneratorTest) — 101 tests, 0 failures, 0 errors
 - GeneratorTest was still running (pre-existing 16x16 bottleneck) but no logging-related issues
+
+---
+
+Here's how it works now:                                                                                                                                                                                                 
+┌─────────────────────┬───────────────────────────────────────────────────────────────────────┬─────────────────┬──────────────────┬───────────┐
+│      Scenario       │                                Command                                │   Config used   │     Log dir      │   Level   │                                                                         
+├─────────────────────┼───────────────────────────────────────────────────────────────────────┼─────────────────┼──────────────────┼───────────┤
+│ Development         │ mvn javafx:run                                                        │ logback-dev.xml │ ./logs/          │ DEBUG     │                                                                         
+├─────────────────────┼───────────────────────────────────────────────────────────────────────┼─────────────────┼──────────────────┼───────────┤                                                                         
+│ Production (JAR)    │ java -jar sudoku.jar                                                  │ logback.xml     │ ~/.sudoku/logs/  │ WARN/INFO │
+├─────────────────────┼───────────────────────────────────────────────────────────────────────┼─────────────────┼──────────────────┼───────────┤
+│ Production (custom) │ java -DLOG_DIR=/var/log/sudoku -DLOG_LEVEL_ROOT=DEBUG -jar sudoku.jar │ logback.xml     │ /var/log/sudoku/ │ DEBUG     │
+└─────────────────────┴───────────────────────────────────────────────────────────────────────┴─────────────────┴──────────────────┴───────────┘
+The key mechanism: logback.xml uses the ${VAR:-default} syntax, so every setting has a sensible production default but can be overridden with -D system properties at launch. The logback-dev.xml at the project root is
+picked up by Maven during development but is not inside src/main/resources/, so it won't be packaged into the JAR.
