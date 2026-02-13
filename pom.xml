@@ -68,6 +68,7 @@
           <mainClass>com.franciscoguemes.sudoku.gui.GameApp</mainClass>
           <options>
             <option>--enable-native-access=javafx.graphics</option>
+            <option>-Dlogback.configurationFile=logback-dev.xml</option>
           </options>
         </configuration>
       </plugin>

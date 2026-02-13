@@ -1,0 +1,40 @@
+<configuration>
+
+    <!--
+        Development logging configuration.
+
+        Used automatically when running via Maven (mvn javafx:run).
+        Logs go to ./logs/ in the project root at DEBUG level.
+    -->
+
+    <property name="LOG_DIR" value="./logs" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M %L -- %msg%n" />
+
+    <!-- Capture startup timestamp to use in the log file name -->
+    <timestamp key="STARTUP_TS" datePattern="yyyy-MM-dd_HH-mm-ss" />
+
+    <!-- Console appender targeting stderr to avoid mixing with ConsoleUI's stdout output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File appender: one log file per application start -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/sudoku_${STARTUP_TS}.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Everything at DEBUG during development -->
+    <logger name="com.franciscoguemes.sudoku" level="DEBUG" />
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>
