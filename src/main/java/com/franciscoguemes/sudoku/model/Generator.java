@@ -3,16 +3,21 @@ package com.franciscoguemes.sudoku.model;
 import com.franciscoguemes.sudoku.solver.SolveResult;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.solver.TechniqueSolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class Generator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
 
     public Puzzle generateRandomSudoku(PuzzleType puzzleType) {
         return generateRandomSudoku(puzzleType, Difficulty.MEDIUM);
     }
 
     public Puzzle generateRandomSudoku(PuzzleType puzzleType, Difficulty difficulty) {
+        LOG.info("Generating random {} puzzle, difficulty={}", puzzleType, difficulty);
         Puzzle solved = generateFullSolution(puzzleType);
         int totalCells = puzzleType.getRows() * puzzleType.getColumns();
         int targetClues = difficulty.getTargetClueCount(puzzleType);
@@ -41,26 +46,32 @@ public class Generator {
             solved.makeSlotEmpty(r, c);
             if (countSolutions(solved, 2) == 1) {
                 currentClues--;
+                LOG.debug("Removed cell [{},{}] (value={}), clues remaining={}", r, c, savedValue, currentClues);
             } else {
                 // Restore — removal breaks uniqueness
                 solved.makeMove(r, c, savedValue, true);
+                LOG.debug("Restored cell [{},{}] (value={}) — removal breaks uniqueness", r, c, savedValue);
             }
         }
 
         // Build the final puzzle with remaining clues marked immutable
         Puzzle result = new Puzzle(puzzleType);
+        int finalClues = 0;
         for (int r = 0; r < puzzleType.getRows(); r++) {
             for (int c = 0; c < puzzleType.getColumns(); c++) {
                 int value = solved.getValue(r, c);
                 if (value != Puzzle.NO_VALUE) {
                     result.makeMove(r, c, value, false);
+                    finalClues++;
                 }
             }
         }
+        LOG.info("Generated {} puzzle with {} clues (target={})", puzzleType, finalClues, targetClues);
         return result;
     }
 
     public Puzzle generateTechniqueGradedSudoku(PuzzleType puzzleType, Difficulty difficulty) {
+        LOG.info("Generating technique-graded {} puzzle, difficulty={}", puzzleType, difficulty);
         // For EXTREME: use the existing clue-count method (backtracking is allowed)
         if (difficulty == Difficulty.EXTREME) {
             return generateRandomSudoku(puzzleType, difficulty);
@@ -118,6 +129,7 @@ public class Generator {
     }
 
     private Puzzle generateFullSolution(PuzzleType puzzleType) {
+        LOG.debug("Generating full solution for {}", puzzleType);
         Puzzle puzzle = new Puzzle(puzzleType);
         Random randomGenerator = new Random();
         int[] possibleValues = getPossibleValuesInPuzzle(puzzle);
@@ -151,7 +163,9 @@ public class Generator {
         }
 
         // Bottleneck here need to improve this so that way 16x16 puzzles can be generated
+        LOG.debug("Starting backtracking solver for full solution ({})", puzzleType);
         backtrackSudokuSolver(0, 0, puzzle);
+        LOG.debug("Full solution generated for {}", puzzleType);
 
         return puzzle;
     }
@@ -233,6 +247,7 @@ public class Generator {
 
                 //if the current number works in the space
                 if (puzzle.isValidMove(r, c, possibleValues[i])) {
+                    LOG.trace("Trying value {} at [{},{}]", possibleValues[i], r, c);
 
                     //make the move
                     puzzle.makeMove(r, c, possibleValues[i], true);

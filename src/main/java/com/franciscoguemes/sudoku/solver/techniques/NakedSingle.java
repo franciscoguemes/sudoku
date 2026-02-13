@@ -3,10 +3,14 @@ package com.franciscoguemes.sudoku.solver.techniques;
 import com.franciscoguemes.sudoku.solver.CandidateGrid;
 import com.franciscoguemes.sudoku.solver.SolvingTechnique;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
 public class NakedSingle implements SolvingTechnique {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NakedSingle.class);
 
     @Override
     public TechniqueLevel getLevel() {
@@ -24,6 +28,7 @@ public class NakedSingle implements SolvingTechnique {
                     Set<Integer> cands = grid.getCandidates(r, c);
                     if (cands.size() == 1) {
                         int value = cands.iterator().next();
+                        LOG.debug("Naked Single: placed {} at [{},{}]", value, r, c);
                         grid.placeValue(r, c, value);
                         return true;
                     }

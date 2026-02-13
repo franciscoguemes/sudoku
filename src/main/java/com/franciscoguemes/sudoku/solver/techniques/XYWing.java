@@ -4,6 +4,8 @@ import com.franciscoguemes.sudoku.solver.CandidateGrid;
 import com.franciscoguemes.sudoku.solver.SolvingTechnique;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 public class XYWing implements SolvingTechnique {
+
+    private static final Logger LOG = LoggerFactory.getLogger(XYWing.class);
 
     @Override
     public TechniqueLevel getLevel() {
@@ -71,7 +75,11 @@ public class XYWing implements SolvingTechnique {
                             }
                         }
                     }
-                    if (removed) return true;
+                    if (removed) {
+                        LOG.debug("XY-Wing: pivot [{},{}] wings [{},{}] [{},{}] — eliminated {}",
+                                pivot[0], pivot[1], w1[0], w1[1], w2[0], w2[1], z);
+                        return true;
+                    }
                 }
             }
         }

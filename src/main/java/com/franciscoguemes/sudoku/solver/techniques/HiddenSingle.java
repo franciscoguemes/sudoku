@@ -4,10 +4,14 @@ import com.franciscoguemes.sudoku.solver.CandidateGrid;
 import com.franciscoguemes.sudoku.solver.SolvingTechnique;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class HiddenSingle implements SolvingTechnique {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HiddenSingle.class);
 
     @Override
     public TechniqueLevel getLevel() {
@@ -55,6 +59,7 @@ public class HiddenSingle implements SolvingTechnique {
             }
 
             if (count == 1) {
+                LOG.debug("Hidden Single: placed {} at [{},{}]", v, onlyCell[0], onlyCell[1]);
                 grid.placeValue(onlyCell[0], onlyCell[1], v);
                 return true;
             }

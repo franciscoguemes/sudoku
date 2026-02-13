@@ -4,11 +4,15 @@ import com.franciscoguemes.sudoku.solver.CandidateGrid;
 import com.franciscoguemes.sudoku.solver.SolvingTechnique;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class XWing implements SolvingTechnique {
+
+    private static final Logger LOG = LoggerFactory.getLogger(XWing.class);
 
     @Override
     public TechniqueLevel getLevel() {
@@ -56,7 +60,10 @@ public class XWing implements SolvingTechnique {
                         if (grid.isEmpty(r, a[1]) && grid.removeCandidate(r, a[1], v)) removed = true;
                         if (grid.isEmpty(r, a[2]) && grid.removeCandidate(r, a[2], v)) removed = true;
                     }
-                    if (removed) return true;
+                    if (removed) {
+                        LOG.debug("X-Wing (rows): value {} in rows [{},{}] cols [{},{}]", v, a[0], b[0], a[1], a[2]);
+                        return true;
+                    }
                 }
             }
         }
@@ -90,7 +97,10 @@ public class XWing implements SolvingTechnique {
                         if (grid.isEmpty(a[1], c) && grid.removeCandidate(a[1], c, v)) removed = true;
                         if (grid.isEmpty(a[2], c) && grid.removeCandidate(a[2], c, v)) removed = true;
                     }
-                    if (removed) return true;
+                    if (removed) {
+                        LOG.debug("X-Wing (cols): value {} in cols [{},{}] rows [{},{}]", v, a[0], b[0], a[1], a[2]);
+                        return true;
+                    }
                 }
             }
         }

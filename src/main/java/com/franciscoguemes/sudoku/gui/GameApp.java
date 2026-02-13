@@ -24,6 +24,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -31,6 +33,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class GameApp extends Application {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GameApp.class);
 
     private PuzzleType currentPuzzleType = PuzzleType.SUDOKU;
     private Difficulty currentDifficulty = Difficulty.MEDIUM;
@@ -41,6 +45,7 @@ public class GameApp extends Application {
 
     @Override
     public void start(Stage stage) {
+        LOG.info("Starting GameApp");
         this.primaryStage = stage;
         gridPane = new GameGridPane();
         numberPad = new NumberPad();
@@ -117,22 +122,26 @@ public class GameApp extends Application {
         stage.setTitle("Sudoku");
         stage.setScene(scene);
         stage.show();
+        LOG.info("GameApp ready");
 
         generateNewPuzzle();
     }
 
     private void onPuzzleTypeChanged(PuzzleType type) {
+        LOG.info("Puzzle type changed to {}", type);
         currentPuzzleType = type;
         numberPad.buildForType(type);
         generateNewPuzzle();
     }
 
     private void onDifficultyChanged(Difficulty difficulty) {
+        LOG.info("Difficulty changed to {}", difficulty);
         currentDifficulty = difficulty;
         generateNewPuzzle();
     }
 
     private void generateNewPuzzle() {
+        LOG.info("Generating new puzzle: type={}, difficulty={}", currentPuzzleType, currentDifficulty);
         Generator generator = new Generator();
         Puzzle puzzle = generator.generateTechniqueGradedSudoku(currentPuzzleType, currentDifficulty);
         Puzzle solution = new Puzzle(puzzle);

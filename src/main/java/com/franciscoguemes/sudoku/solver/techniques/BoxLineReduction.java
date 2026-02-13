@@ -4,10 +4,14 @@ import com.franciscoguemes.sudoku.solver.CandidateGrid;
 import com.franciscoguemes.sudoku.solver.SolvingTechnique;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class BoxLineReduction implements SolvingTechnique {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BoxLineReduction.class);
 
     @Override
     public TechniqueLevel getLevel() {
@@ -46,7 +50,10 @@ public class BoxLineReduction implements SolvingTechnique {
                             removed = true;
                         }
                     }
-                    if (removed) return true;
+                    if (removed) {
+                        LOG.debug("Box/Line Reduction: value {} confined to row {} in box [{},{}]", val, r, boxStartRow, boxStartCol);
+                        return true;
+                    }
                 }
             }
         }
@@ -77,7 +84,10 @@ public class BoxLineReduction implements SolvingTechnique {
                             removed = true;
                         }
                     }
-                    if (removed) return true;
+                    if (removed) {
+                        LOG.debug("Box/Line Reduction: value {} confined to col {} in box [{},{}]", val, c, boxStartRow, boxStartCol);
+                        return true;
+                    }
                 }
             }
         }

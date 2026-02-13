@@ -4,12 +4,16 @@ import com.franciscoguemes.sudoku.solver.CandidateGrid;
 import com.franciscoguemes.sudoku.solver.SolvingTechnique;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class UniqueRectangle implements SolvingTechnique {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UniqueRectangle.class);
 
     @Override
     public TechniqueLevel getLevel() {
@@ -83,7 +87,11 @@ public class UniqueRectangle implements SolvingTechnique {
                 for (int v : pair) {
                     if (grid.removeCandidate(r, col1, v)) removed = true;
                 }
-                if (removed) return true;
+                if (removed) {
+                    LOG.debug("Unique Rectangle: pair {} at [{},{}] [{},{}] [{},{}] — eliminated from [{},{}]",
+                            pair, row, col1, row, col2, r, col2, r, col1);
+                    return true;
+                }
             }
 
             // Case: 3 cells have pair, (r,col2) has extra candidates
@@ -92,7 +100,11 @@ public class UniqueRectangle implements SolvingTechnique {
                 for (int v : pair) {
                     if (grid.removeCandidate(r, col2, v)) removed = true;
                 }
-                if (removed) return true;
+                if (removed) {
+                    LOG.debug("Unique Rectangle: pair {} at [{},{}] [{},{}] [{},{}] — eliminated from [{},{}]",
+                            pair, row, col1, row, col2, r, col1, r, col2);
+                    return true;
+                }
             }
         }
         return false;
@@ -122,7 +134,10 @@ public class UniqueRectangle implements SolvingTechnique {
                 for (int v : pair) {
                     if (grid.removeCandidate(row1, c, v)) removed = true;
                 }
-                if (removed) return true;
+                if (removed) {
+                    LOG.debug("Unique Rectangle: pair {} — eliminated from [{},{}]", pair, row1, c);
+                    return true;
+                }
             }
 
             if (candsA.equals(pair) && candsB.containsAll(pair) && candsB.size() > 2) {
@@ -130,7 +145,10 @@ public class UniqueRectangle implements SolvingTechnique {
                 for (int v : pair) {
                     if (grid.removeCandidate(row2, c, v)) removed = true;
                 }
-                if (removed) return true;
+                if (removed) {
+                    LOG.debug("Unique Rectangle: pair {} — eliminated from [{},{}]", pair, row2, c);
+                    return true;
+                }
             }
         }
         return false;
