@@ -44,7 +44,36 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>prod</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <env>prod</env>
+      </properties>
+    </profile>
+    <profile>
+      <id>dev</id>
+      <properties>
+        <env>dev</env>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>config/**</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>src/main/resources/config/${env}</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -68,7 +97,6 @@
           <mainClass>com.franciscoguemes.sudoku.gui.GameApp</mainClass>
           <options>
             <option>--enable-native-access=javafx.graphics</option>
-            <option>-Dlogback.configurationFile=logback-dev.xml</option>
           </options>
         </configuration>
       </plugin>

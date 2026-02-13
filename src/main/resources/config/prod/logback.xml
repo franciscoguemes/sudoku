@@ -1,12 +1,10 @@
 <configuration>
 
     <!--
-        Production logging configuration (shipped inside the JAR).
+        Production logging configuration (default profile).
 
         Every value can be overridden at launch with a system property:
             java -DLOG_DIR=/var/log/sudoku -DLOG_LEVEL_ROOT=DEBUG -jar sudoku.jar
-
-        For development, use logback-dev.xml instead (see project root).
     -->
 
     <property name="LOG_DIR" value="${LOG_DIR:-${user.home}/.sudoku/logs}" />

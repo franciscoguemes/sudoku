@@ -3,7 +3,7 @@
     <!--
         Development logging configuration.
 
-        Used automatically when running via Maven (mvn javafx:run).
+        Activated by the "dev" Maven profile: mvn javafx:run -Pdev
         Logs go to ./logs/ in the project root at DEBUG level.
     -->
 
