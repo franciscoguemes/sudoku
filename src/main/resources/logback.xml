@@ -1,7 +1,11 @@
 <configuration>
 
+<!--    <property name="LOG_DIR" value="/var/log/sudoku" />-->
     <property name="LOG_DIR" value="${user.home}/.sudoku/logs" />
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M %L -- %msg%n" />
+
+    <!-- Capture startup timestamp to use in the log file name -->
+    <timestamp key="STARTUP_TS" datePattern="yyyy-MM-dd_HH-mm-ss" />
 
     <!-- Console appender targeting stderr to avoid mixing with ConsoleUI's stdout output -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -11,15 +15,9 @@
         </encoder>
     </appender>
 
-    <!-- Rolling file appender with daily rotation -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/sudoku.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/sudoku.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
+    <!-- File appender: one log file per application start -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/sudoku_${STARTUP_TS}.log</file>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
