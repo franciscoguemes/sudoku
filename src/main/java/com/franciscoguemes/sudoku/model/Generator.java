@@ -1,6 +1,8 @@
 package com.franciscoguemes.sudoku.model;
 
+import com.franciscoguemes.sudoku.solver.BacktrackingSolver;
 import com.franciscoguemes.sudoku.solver.SolveResult;
+import com.franciscoguemes.sudoku.solver.SudokuSolver;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.solver.TechniqueSolver;
 import org.slf4j.Logger;
@@ -11,6 +13,16 @@ import java.util.*;
 public class Generator {
 
     private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
+
+    private final SudokuSolver solver;
+
+    public Generator() {
+        this(new BacktrackingSolver());
+    }
+
+    public Generator(SudokuSolver solver) {
+        this.solver = solver;
+    }
 
     public Puzzle generateRandomSudoku(PuzzleType puzzleType) {
         return generateRandomSudoku(puzzleType, Difficulty.MEDIUM);
@@ -125,14 +137,14 @@ public class Generator {
     }
 
     public boolean solve(Puzzle puzzle) {
-        return backtrackSudokuSolver(0, 0, puzzle);
+        return solver.solve(puzzle);
     }
 
     private Puzzle generateFullSolution(PuzzleType puzzleType) {
         LOG.debug("Generating full solution for {}", puzzleType);
         Puzzle puzzle = new Puzzle(puzzleType);
         Random randomGenerator = new Random();
-        int[] possibleValues = getPossibleValuesInPuzzle(puzzle);
+        int[] possibleValues = puzzle.getPuzzleType().getPossibleValuesInPuzzle();
 
         // Initialize first column
         List<Integer> valuesNotUsedYet = new ArrayList<>(Arrays.stream(possibleValues).boxed().toList());
@@ -163,8 +175,8 @@ public class Generator {
         }
 
         // Bottleneck here need to improve this so that way 16x16 puzzles can be generated
-        LOG.debug("Starting backtracking solver for full solution ({})", puzzleType);
-        backtrackSudokuSolver(0, 0, puzzle);
+        LOG.debug("Starting solver for full solution ({})", puzzleType);
+        solver.solve(puzzle);
         LOG.debug("Full solution generated for {}", puzzleType);
 
         return puzzle;
@@ -196,12 +208,11 @@ public class Generator {
         }
 
         if (puzzle.getValue(r, c) != Puzzle.NO_VALUE) {
-            // Cell already filled, move to next
             countSolutionsRecursive(nextR, nextC, puzzle, count, maxCount);
             return;
         }
 
-        int[] possibleValues = getPossibleValuesInPuzzle(puzzle);
+        int[] possibleValues = puzzle.getPuzzleType().getPossibleValuesInPuzzle();
         for (int value : possibleValues) {
             if (puzzle.isValidMove(r, c, value)) {
                 puzzle.makeMove(r, c, value, true);
@@ -220,74 +231,5 @@ public class Generator {
                 }
             }
         }
-    }
-
-    /**
-     * Solves the sudoku puzzle
-     * Pre-cond: r = 0,c = 0
-     * Post-cond: solved puzzle
-     * @param r: the current row
-     * @param c: the current column
-     * @return valid move or not or done
-     * Responses: Erroneous data
-     */
-    private boolean backtrackSudokuSolver(int r, int c, Puzzle puzzle) {
-        //If the move is not valid return false
-        if (!puzzle.inRange(r, c)) {
-            return false;
-        }
-
-        int[] possibleValues = getPossibleValuesInPuzzle(puzzle);
-
-        //if the current space is empty
-        if (puzzle.isSlotAvailable(r, c)) {
-
-            //loop to find the correct value for the space
-            for (int i = 0; i < possibleValues.length; i++) {
-
-                //if the current number works in the space
-                if (puzzle.isValidMove(r, c, possibleValues[i])) {
-                    LOG.trace("Trying value {} at [{},{}]", possibleValues[i], r, c);
-
-                    //make the move
-                    puzzle.makeMove(r, c, possibleValues[i], true);
-
-                    //if puzzle solved return true
-                    if (puzzle.boardFull()) {
-                        return true;
-                    }
-
-                    //go to next move
-                    if (puzzle.isLastRow(r)) {
-                        if (backtrackSudokuSolver(0, c + 1, puzzle)) return true;
-                    } else {
-                        if (backtrackSudokuSolver(r + 1, c, puzzle)) return true;
-                    }
-                }
-            }
-        } else {  //if the current space is not empty
-            //got to the next move
-            if (puzzle.isLastRow(r)) {
-                return backtrackSudokuSolver(0, c + 1, puzzle);
-            } else {
-                return backtrackSudokuSolver(r + 1, c, puzzle);
-            }
-        }
-
-        //undo move
-        puzzle.makeSlotEmpty(r, c);
-
-        //backtrack
-        return false;
-    }
-
-    private static int[] getPossibleValuesInPuzzle(Puzzle puzzle) {
-        int minValue = puzzle.getPuzzleType().getMinValue();
-        int maxValue = puzzle.getPuzzleType().getMaxValue();
-        int[] possibleValues = new int[maxValue - minValue + 1];
-        for (int i = 0; i < possibleValues.length; i++) {
-            possibleValues[i] = minValue + i;
-        }
-        return possibleValues;
     }
 }
