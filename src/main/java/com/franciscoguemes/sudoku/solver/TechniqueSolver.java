@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class TechniqueSolver {
+public class TechniqueSolver implements SudokuSolver {
 
     private static final Logger LOG = LoggerFactory.getLogger(TechniqueSolver.class);
 
@@ -55,8 +55,9 @@ public class TechniqueSolver {
         return result;
     }
 
-    public SolveResult solve(Puzzle puzzle) {
-        return solve(puzzle, TechniqueLevel.ADVANCED);
+    @Override
+    public boolean solve(Puzzle puzzle) {
+        return solve(puzzle, TechniqueLevel.ADVANCED).solved();
     }
 
     public SolveResult grade(Puzzle puzzle) {

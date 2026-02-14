@@ -65,44 +65,6 @@ class BacktrackingSolverTest {
         assertAllConstraintsSatisfied(puzzle);
     }
 
-    @Test
-    @DisplayName("countSolutions returns 1 for a puzzle with a unique solution")
-    void testCountSolutionsUnique() {
-        // Generate a full solution, then remove one cell — still unique
-        Puzzle puzzle = new Puzzle(PuzzleType.MINI_SUDOKU);
-        solver.solve(puzzle);
-
-        int savedValue = puzzle.getValue(0, 0);
-        puzzle.makeSlotEmpty(0, 0);
-
-        int solutions = solver.countSolutions(puzzle, 10);
-        assertEquals(1, solutions, "Removing one cell from a complete board should still yield a unique solution");
-    }
-
-    @Test
-    @DisplayName("countSolutions respects maxCount limit")
-    void testCountSolutionsRespectsMaxCount() {
-        // An empty mini sudoku has many solutions; countSolutions should stop at maxCount
-        Puzzle puzzle = new Puzzle(PuzzleType.MINI_SUDOKU);
-        int solutions = solver.countSolutions(puzzle, 2);
-
-        assertEquals(2, solutions, "Should stop counting at maxCount");
-    }
-
-    @Test
-    @DisplayName("countSolutions does not modify the original puzzle")
-    void testCountSolutionsDoesNotModifyPuzzle() {
-        Puzzle puzzle = new Puzzle(PuzzleType.MINI_SUDOKU);
-        // Place one value
-        puzzle.makeMove(0, 0, 1, false);
-
-        solver.countSolutions(puzzle, 5);
-
-        // Verify original puzzle is unchanged
-        assertEquals(1, puzzle.getValue(0, 0), "Original puzzle should not be modified");
-        assertFalse(puzzle.boardFull(), "Original puzzle should remain incomplete");
-    }
-
     // Helper: verify all Sudoku constraints are satisfied
     private void assertAllConstraintsSatisfied(Puzzle puzzle) {
         PuzzleType type = puzzle.getPuzzleType();

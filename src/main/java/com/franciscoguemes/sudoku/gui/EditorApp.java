@@ -4,9 +4,12 @@ import com.franciscoguemes.sudoku.gui.editor.MainMenuBar;
 import com.franciscoguemes.sudoku.gui.editor.SudokuGridPane;
 import com.franciscoguemes.sudoku.io.PuzzleReader;
 import com.franciscoguemes.sudoku.io.PuzzleWriter;
-import com.franciscoguemes.sudoku.model.Generator;
+import com.franciscoguemes.sudoku.model.Difficulty;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import com.franciscoguemes.sudoku.model.RandomGenerator;
+import com.franciscoguemes.sudoku.solver.BacktrackingSolver;
+import com.franciscoguemes.sudoku.solver.SudokuSolver;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -106,8 +109,8 @@ public class EditorApp extends Application {
         });
 
         dialog.showAndWait().ifPresent(type -> {
-            Generator generator = new Generator();
-            Puzzle puzzle = generator.generateRandomSudoku(type);
+            RandomGenerator generator = new RandomGenerator(new BacktrackingSolver());
+            Puzzle puzzle = generator.generate(type, Difficulty.MEDIUM);
             currentPuzzle = puzzle;
             gridPane.displayPuzzle(puzzle);
             primaryStage.setTitle("Sudoku - New " + type.getDescription());
@@ -125,8 +128,8 @@ public class EditorApp extends Application {
         }
 
         Puzzle copy = new Puzzle(currentPuzzle);
-        Generator generator = new Generator();
-        boolean solved = generator.solve(copy);
+        SudokuSolver solver = new BacktrackingSolver();
+        boolean solved = solver.solve(copy);
 
         if (solved) {
             gridPane.displayPuzzle(copy);

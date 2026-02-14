@@ -9,6 +9,9 @@ import com.franciscoguemes.sudoku.model.Difficulty;
 import com.franciscoguemes.sudoku.model.Generator;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import com.franciscoguemes.sudoku.model.RandomGenerator;
+import com.franciscoguemes.sudoku.model.TechniqueGradedGenerator;
+import com.franciscoguemes.sudoku.solver.BacktrackingSolver;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -142,10 +145,12 @@ public class GameApp extends Application {
 
     private void generateNewPuzzle() {
         LOG.info("Generating new puzzle: type={}, difficulty={}", currentPuzzleType, currentDifficulty);
-        Generator generator = new Generator();
-        Puzzle puzzle = generator.generateTechniqueGradedSudoku(currentPuzzleType, currentDifficulty);
+        Generator generator = (currentDifficulty == Difficulty.EXTREME)
+                ? new RandomGenerator(new BacktrackingSolver())
+                : new TechniqueGradedGenerator();
+        Puzzle puzzle = generator.generate(currentPuzzleType, currentDifficulty);
         Puzzle solution = new Puzzle(puzzle);
-        generator.solve(solution);
+        new BacktrackingSolver().solve(solution);
         gridPane.displayPuzzle(puzzle, solution);
         gridPane.setVisible(true);
         statsPane.resetMistakes();
