@@ -2,10 +2,14 @@ package com.franciscoguemes.sudoku.solver;
 
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class CandidateGrid {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CandidateGrid.class);
 
     private final int[][] board;
     private final Set<Integer>[][] candidates;
@@ -27,9 +31,11 @@ public class CandidateGrid {
             }
         }
 
+        int emptyCells = 0;
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 if (board[r][c] == Puzzle.NO_VALUE) {
+                    emptyCells++;
                     for (int v = puzzleType.getMinValue(); v <= puzzleType.getMaxValue(); v++) {
                         if (!numInRow(r, v) && !numInCol(c, v) && !numInBox(r, c, v)) {
                             candidates[r][c].add(v);
@@ -38,6 +44,7 @@ public class CandidateGrid {
                 }
             }
         }
+        LOG.debug("CandidateGrid initialized: {} empty cells out of {}x{}", emptyCells, rows, cols);
     }
 
     @SuppressWarnings("unchecked")
@@ -66,6 +73,7 @@ public class CandidateGrid {
     }
 
     public void placeValue(int r, int c, int value) {
+        LOG.trace("Placing value {} at [{},{}]", value, r, c);
         board[r][c] = value;
         candidates[r][c].clear();
 

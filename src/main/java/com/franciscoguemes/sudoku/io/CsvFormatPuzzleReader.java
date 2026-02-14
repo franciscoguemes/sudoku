@@ -3,6 +3,8 @@ package com.franciscoguemes.sudoku.io;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
 import com.franciscoguemes.sudoku.util.ValueFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,8 +17,11 @@ import static com.franciscoguemes.sudoku.io.CsvFormatConstants.SEPARATOR;
 
 public class CsvFormatPuzzleReader implements PuzzleReader {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CsvFormatPuzzleReader.class);
+
     @Override
     public Puzzle read(InputStream inputStream) throws IOException {
+        LOG.info("Reading puzzle in CSV format");
         List<int[]> rows = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -49,6 +54,7 @@ public class CsvFormatPuzzleReader implements PuzzleReader {
         int numCols = rows.get(0).length;
 
         PuzzleType puzzleType = inferPuzzleType(numRows, numCols);
+        LOG.info("Loaded CSV puzzle: {}x{} ({})", numRows, numCols, puzzleType);
         Puzzle puzzle = new Puzzle(puzzleType);
 
         for (int r = 0; r < numRows; r++) {

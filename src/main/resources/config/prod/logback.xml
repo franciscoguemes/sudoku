@@ -1,0 +1,48 @@
+<configuration>
+
+    <!--
+        Production logging configuration (default profile).
+
+        Every value can be overridden at launch with a system property:
+            java -DLOG_DIR=/var/log/sudoku -DLOG_LEVEL_ROOT=DEBUG -jar sudoku.jar
+    -->
+
+    <property name="LOG_DIR" value="${LOG_DIR:-${user.home}/.sudoku/logs}" />
+    <property name="LOG_LEVEL_ROOT" value="${LOG_LEVEL_ROOT:-WARN}" />
+    <property name="LOG_LEVEL_MODEL" value="${LOG_LEVEL_MODEL:-INFO}" />
+    <property name="LOG_LEVEL_SOLVER" value="${LOG_LEVEL_SOLVER:-INFO}" />
+    <property name="LOG_LEVEL_IO" value="${LOG_LEVEL_IO:-INFO}" />
+    <property name="LOG_LEVEL_GUI" value="${LOG_LEVEL_GUI:-INFO}" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M %L -- %msg%n" />
+
+    <!-- Capture startup timestamp to use in the log file name -->
+    <timestamp key="STARTUP_TS" datePattern="yyyy-MM-dd_HH-mm-ss" />
+
+    <!-- Console appender targeting stderr to avoid mixing with ConsoleUI's stdout output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File appender: one log file per application start -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/sudoku_${STARTUP_TS}.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Per-package log levels -->
+    <logger name="com.franciscoguemes.sudoku.model" level="${LOG_LEVEL_MODEL}" />
+    <logger name="com.franciscoguemes.sudoku.solver" level="${LOG_LEVEL_SOLVER}" />
+    <logger name="com.franciscoguemes.sudoku.io" level="${LOG_LEVEL_IO}" />
+    <logger name="com.franciscoguemes.sudoku.gui" level="${LOG_LEVEL_GUI}" />
+
+    <root level="${LOG_LEVEL_ROOT}">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>

@@ -10,6 +10,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -17,6 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GameGridPane extends StackPane {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GameGridPane.class);
 
     private static final String SELECTED_BG = "#BBDEFB";
     private static final String HIGHLIGHT_BG = "#E3F2FD";
@@ -111,14 +115,17 @@ public class GameGridPane extends StackPane {
 
         int correctValue = solution.getValue(selectedRow, selectedCol);
         if (value == correctValue) {
+            LOG.debug("Correct value {} placed at [{},{}]", value, selectedRow, selectedCol);
             puzzle.makeMove(selectedRow, selectedCol, value, true);
             removeNoteFromPeers(selectedRow, selectedCol, value);
             if (puzzle.boardFull() && onPuzzleCompleted != null) {
+                LOG.info("Puzzle completed!");
                 refresh();
                 onPuzzleCompleted.run();
                 return;
             }
         } else {
+            LOG.debug("Wrong value {} at [{},{}] (expected {})", value, selectedRow, selectedCol, correctValue);
             wrongValues[selectedRow][selectedCol] = value;
             if (onWrongMove != null) {
                 onWrongMove.run();
@@ -131,6 +138,7 @@ public class GameGridPane extends StackPane {
     public void erase() {
         if (selectedRow < 0 || selectedCol < 0) return;
         if (!puzzle.isSlotMutable(selectedRow, selectedCol)) return;
+        LOG.debug("Erase at [{},{}]", selectedRow, selectedCol);
 
         int prevPuzzleValue = puzzle.getValue(selectedRow, selectedCol);
         int prevWrongValue = wrongValues[selectedRow][selectedCol];
@@ -222,6 +230,7 @@ public class GameGridPane extends StackPane {
 
     public void undo() {
         if (undoStack.isEmpty()) return;
+        LOG.debug("Undo action");
 
         UndoEntry entry = undoStack.pop();
         int row = entry.row();

@@ -86,9 +86,23 @@ mvn package -DskipTests
 
 Then run the JAR directly with `java`:
 
+**Console App:**
 ```bash
 java -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.ConsoleApp
 ```
+
+**Sudoku Game (JavaFX):**
+```bash
+java --enable-native-access=javafx.graphics --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.gui.GameApp
+```
+
+**Sudoku Editor (JavaFX):**
+```bash
+java --enable-native-access=javafx.graphics --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.gui.EditorApp
+```
+
+> **Note:** Replace `/path/to/javafx-sdk/lib` with the actual path to your JavaFX SDK `lib` directory.
+> The `--enable-native-access=javafx.graphics` flag is required on Java 21+ to avoid a native access warning from JavaFX.
 
 ## Game Controls
 

@@ -4,6 +4,8 @@ import com.franciscoguemes.sudoku.io.PuzzleReader;
 import com.franciscoguemes.sudoku.model.Generator;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,6 +13,8 @@ import java.nio.file.Path;
 import java.util.Scanner;
 
 public class ConsoleUI {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConsoleUI.class);
 
     private final PuzzlePrinter printer;
 
@@ -36,6 +40,7 @@ public class ConsoleUI {
     }
 
     private void runWithFile(Path filePath) {
+        LOG.debug("Loading puzzle from file: {}", filePath);
         if (!Files.exists(filePath)) {
             System.err.println("Error: File not found: " + filePath);
             return;

@@ -3,6 +3,8 @@ package com.franciscoguemes.sudoku.io;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
 import com.franciscoguemes.sudoku.util.ValueFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,8 +12,11 @@ import java.io.PrintWriter;
 
 public class SudokuFormatPuzzleWriter implements PuzzleWriter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SudokuFormatPuzzleWriter.class);
+
     @Override
     public void write(Puzzle puzzle, OutputStream outputStream) throws IOException {
+        LOG.info("Writing puzzle in Sudoku format ({})", puzzle.getPuzzleType());
         PuzzleType type = puzzle.getPuzzleType();
         int rows = type.getRows();
         int cols = type.getColumns();

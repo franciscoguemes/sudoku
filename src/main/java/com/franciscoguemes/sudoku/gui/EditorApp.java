@@ -20,6 +20,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -27,12 +29,15 @@ import java.util.List;
 
 public class EditorApp extends Application {
 
+    private static final Logger LOG = LoggerFactory.getLogger(EditorApp.class);
+
     private SudokuGridPane gridPane;
     private Stage primaryStage;
     private Puzzle currentPuzzle;
 
     @Override
     public void start(Stage stage) {
+        LOG.info("Starting EditorApp");
         this.primaryStage = stage;
         this.gridPane = new SudokuGridPane();
 
@@ -60,6 +65,7 @@ public class EditorApp extends Application {
         stage.setTitle("Sudoku");
         stage.setScene(scene);
         stage.show();
+        LOG.info("EditorApp ready");
 
         List<String> args = getParameters().getRaw();
         if (!args.isEmpty()) {
@@ -134,6 +140,7 @@ public class EditorApp extends Application {
     }
 
     private void exportPuzzle() {
+        LOG.info("Export puzzle requested");
         if (currentPuzzle == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No puzzle");
@@ -155,6 +162,7 @@ public class EditorApp extends Application {
                 PuzzleWriter writer = PuzzleWriter.getWriterForFile(file.toPath());
                 writer.write(currentPuzzle, file.toPath());
             } catch (Exception ex) {
+                LOG.error("Failed to export puzzle", ex);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Failed to export puzzle");
@@ -178,6 +186,7 @@ public class EditorApp extends Application {
     }
 
     private void importPuzzleFromFile(Path filePath) {
+        LOG.info("Importing puzzle from {}", filePath);
         try {
             PuzzleReader reader = PuzzleReader.getReaderForFile(filePath);
             Puzzle puzzle = reader.read(filePath);
@@ -185,6 +194,7 @@ public class EditorApp extends Application {
             gridPane.displayPuzzle(puzzle);
             primaryStage.setTitle("Sudoku - " + filePath.getFileName());
         } catch (Exception ex) {
+            LOG.error("Failed to import puzzle from {}", filePath, ex);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Failed to import puzzle");

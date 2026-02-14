@@ -4,12 +4,16 @@ import com.franciscoguemes.sudoku.solver.CandidateGrid;
 import com.franciscoguemes.sudoku.solver.SolvingTechnique;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class NakedTriple implements SolvingTechnique {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NakedTriple.class);
 
     @Override
     public TechniqueLevel getLevel() {
@@ -69,7 +73,10 @@ public class NakedTriple implements SolvingTechnique {
                             }
                         }
                     }
-                    if (removed) return true;
+                    if (removed) {
+                        LOG.debug("Naked Triple: {} — eliminated candidates", union);
+                        return true;
+                    }
                 }
             }
         }
