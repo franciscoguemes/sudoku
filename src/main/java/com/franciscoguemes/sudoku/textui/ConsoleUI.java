@@ -1,9 +1,11 @@
 package com.franciscoguemes.sudoku.textui;
 
 import com.franciscoguemes.sudoku.io.PuzzleReader;
-import com.franciscoguemes.sudoku.model.Generator;
+import com.franciscoguemes.sudoku.model.Difficulty;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
+import com.franciscoguemes.sudoku.model.RandomGenerator;
+import com.franciscoguemes.sudoku.solver.BacktrackingSolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +35,8 @@ public class ConsoleUI {
     private void runInteractive() {
         PuzzleType type = promptPuzzleType();
         System.out.println("Generating " + type.getDescription() + "...");
-        Generator generator = new Generator();
-        Puzzle puzzle = generator.generateRandomSudoku(type);
+        RandomGenerator generator = new RandomGenerator(new BacktrackingSolver());
+        Puzzle puzzle = generator.generate(type, Difficulty.MEDIUM);
         System.out.println();
         printer.print(puzzle);
     }

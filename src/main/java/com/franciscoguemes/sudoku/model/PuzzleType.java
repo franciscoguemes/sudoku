@@ -53,4 +53,12 @@ public enum PuzzleType {
         return description;
     }
 
+    public int[] getPossibleValuesInPuzzle() {
+        int[] possibleValues = new int[maxValue - minValue + 1];
+        for (int i = 0; i < possibleValues.length; i++) {
+            possibleValues[i] = minValue + i;
+        }
+        return possibleValues;
+    }
+
 }

@@ -1,6 +1,6 @@
 package com.franciscoguemes.sudoku.solver;
 
-import com.franciscoguemes.sudoku.model.Generator;
+import com.franciscoguemes.sudoku.model.RandomGenerator;
 import com.franciscoguemes.sudoku.model.Puzzle;
 import com.franciscoguemes.sudoku.model.PuzzleType;
 import com.franciscoguemes.sudoku.model.Difficulty;
@@ -16,10 +16,10 @@ class TechniqueSolverTest {
     @DisplayName("Solves a puzzle with only naked singles (nearly complete board)")
     void testSolvesWithNakedSinglesOnly() {
         // Create a nearly-complete puzzle that can be solved with naked singles only
-        Generator gen = new Generator();
+        SudokuSolver backtracker = new BacktrackingSolver();
         Puzzle full = new Puzzle(PuzzleType.SUDOKU);
         // Generate a full solution
-        gen.solve(full);
+        backtracker.solve(full);
 
         // Remove just a few cells so naked singles suffice
         Puzzle puzzle = new Puzzle(full);
@@ -36,7 +36,7 @@ class TechniqueSolverTest {
         puzzle.makeSlotEmpty(lastR, lastC);
 
         TechniqueSolver solver = new TechniqueSolver();
-        SolveResult result = solver.solve(puzzle);
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.ADVANCED);
 
         assertTrue(result.solved());
         assertEquals(TechniqueLevel.NAKED_SINGLE, result.hardestTechnique());
@@ -46,8 +46,8 @@ class TechniqueSolverTest {
     @DisplayName("Solve with maxLevel restriction returns false for puzzles above that level")
     void testMaxLevelRestriction() {
         // Generate a real puzzle — likely needs more than naked singles
-        Generator gen = new Generator();
-        Puzzle puzzle = gen.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.HARD);
+        RandomGenerator gen = new RandomGenerator(new BacktrackingSolver());
+        Puzzle puzzle = gen.generate(PuzzleType.SUDOKU, Difficulty.HARD);
 
         TechniqueSolver solver = new TechniqueSolver();
 
@@ -55,7 +55,7 @@ class TechniqueSolverTest {
         SolveResult restrictedResult = solver.solve(puzzle, TechniqueLevel.NAKED_SINGLE);
 
         // Try to solve with all techniques
-        SolveResult fullResult = solver.solve(puzzle);
+        SolveResult fullResult = solver.solve(puzzle, TechniqueLevel.ADVANCED);
 
         // The restricted solve should be equal or less successful
         if (fullResult.solved() && !restrictedResult.solved()) {
@@ -69,8 +69,8 @@ class TechniqueSolverTest {
     @DisplayName("Grade returns BACKTRACKING for unsolvable-by-techniques puzzle")
     void testGradeBacktracking() {
         // Generate an EXTREME puzzle that likely requires backtracking
-        Generator gen = new Generator();
-        Puzzle puzzle = gen.generateRandomSudoku(PuzzleType.SUDOKU, Difficulty.EXTREME);
+        RandomGenerator gen = new RandomGenerator(new BacktrackingSolver());
+        Puzzle puzzle = gen.generate(PuzzleType.SUDOKU, Difficulty.EXTREME);
 
         TechniqueSolver solver = new TechniqueSolver();
         SolveResult result = solver.grade(puzzle);
@@ -85,12 +85,12 @@ class TechniqueSolverTest {
     @Test
     @DisplayName("Solver returns null hardestTechnique when puzzle is already solved")
     void testAlreadySolvedPuzzle() {
-        Generator gen = new Generator();
+        SudokuSolver backtracker = new BacktrackingSolver();
         Puzzle full = new Puzzle(PuzzleType.SUDOKU);
-        gen.solve(full);
+        backtracker.solve(full);
 
         TechniqueSolver solver = new TechniqueSolver();
-        SolveResult result = solver.solve(full);
+        SolveResult result = solver.solve(full, TechniqueLevel.ADVANCED);
 
         assertTrue(result.solved());
         assertNull(result.hardestTechnique());
@@ -99,11 +99,11 @@ class TechniqueSolverTest {
     @Test
     @DisplayName("Solver works with Mini Sudoku")
     void testMiniSudoku() {
-        Generator gen = new Generator();
-        Puzzle puzzle = gen.generateRandomSudoku(PuzzleType.MINI_SUDOKU, Difficulty.EASY);
+        RandomGenerator gen = new RandomGenerator(new BacktrackingSolver());
+        Puzzle puzzle = gen.generate(PuzzleType.MINI_SUDOKU, Difficulty.EASY);
 
         TechniqueSolver solver = new TechniqueSolver();
-        SolveResult result = solver.solve(puzzle);
+        SolveResult result = solver.solve(puzzle, TechniqueLevel.ADVANCED);
 
         // EASY Mini Sudoku should be solvable by techniques
         assertNotNull(result);
