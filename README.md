@@ -79,7 +79,7 @@ mvn compile exec:java -Dexec.mainClass="com.franciscoguemes.sudoku.ConsoleApp" -
 
 ### Running without Maven
 
-First, compile and package the project:
+First, compile and package the project (this also copies dependencies to `target/lib/`):
 ```bash
 mvn package -DskipTests
 ```
@@ -93,16 +93,15 @@ java -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.ConsoleApp
 
 **Sudoku Game (JavaFX):**
 ```bash
-java --enable-native-access=javafx.graphics --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.gui.GameApp
+java --enable-native-access=javafx.graphics --module-path target/lib --add-modules javafx.controls -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.gui.GameApp
 ```
 
 **Sudoku Editor (JavaFX):**
 ```bash
-java --enable-native-access=javafx.graphics --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.gui.EditorApp
+java --enable-native-access=javafx.graphics --module-path target/lib --add-modules javafx.controls -cp target/sudoku-1.0-SNAPSHOT.jar com.franciscoguemes.sudoku.gui.EditorApp
 ```
 
-> **Note:** Replace `/path/to/javafx-sdk/lib` with the actual path to your JavaFX SDK `lib` directory.
-> The `--enable-native-access=javafx.graphics` flag is required on Java 21+ to avoid a native access warning from JavaFX.
+> **Note:** The `--enable-native-access=javafx.graphics` flag is required on Java 21+ to avoid a native access warning from JavaFX.
 
 ## Game Controls
 
