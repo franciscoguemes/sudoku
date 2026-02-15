@@ -1,3 +1,6 @@
+# This workflow will build native installers for the different OS: Windows, Mac (ARM64) and Linux.
+
+
 name: Build Native Installers
 
 on:
