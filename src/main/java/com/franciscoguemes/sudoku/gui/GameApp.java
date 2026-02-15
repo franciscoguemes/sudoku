@@ -12,6 +12,7 @@ import com.franciscoguemes.sudoku.model.PuzzleType;
 import com.franciscoguemes.sudoku.model.RandomGenerator;
 import com.franciscoguemes.sudoku.model.TechniqueGradedGenerator;
 import com.franciscoguemes.sudoku.solver.BacktrackingSolver;
+import com.franciscoguemes.sudoku.solver.DancingLinksSolver;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -69,7 +70,7 @@ public class GameApp extends Application {
         for (Difficulty diff : Difficulty.values()) {
             diffItems.put(diff, diff.getDescription());
         }
-        SelectorBar<Difficulty> difficultySelector = new SelectorBar<>("Difficulty:", diffItems, Difficulty.EXTREME);
+        SelectorBar<Difficulty> difficultySelector = new SelectorBar<>("Difficulty:", diffItems, currentDifficulty);
         difficultySelector.setOnSelectionChanged(this::onDifficultyChanged);
 
         // Stats and tools
@@ -146,7 +147,7 @@ public class GameApp extends Application {
     private void generateNewPuzzle() {
         LOG.info("Generating new puzzle: type={}, difficulty={}", currentPuzzleType, currentDifficulty);
         Generator generator = (currentDifficulty == Difficulty.EXTREME)
-                ? new RandomGenerator(new BacktrackingSolver())
+                ? new RandomGenerator(new DancingLinksSolver())
                 : new TechniqueGradedGenerator();
         Puzzle puzzle = generator.generate(currentPuzzleType, currentDifficulty);
         Puzzle solution = new Puzzle(puzzle);

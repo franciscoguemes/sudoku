@@ -19,7 +19,7 @@ public class RandomGenerator implements Generator {
 
     @Override
     public Puzzle generate(PuzzleType puzzleType, Difficulty difficulty) {
-        LOG.info("Generating random {} puzzle, difficulty={}", puzzleType, difficulty);
+        LOG.info("Generating random {} puzzle, difficulty={} using solver={}", puzzleType, difficulty, solver.getClass().getSimpleName());
         Puzzle solved = Generator.generateFullSolution(puzzleType, solver);
         int totalCells = puzzleType.getRows() * puzzleType.getColumns();
         int targetClues = difficulty.getTargetClueCount(puzzleType);

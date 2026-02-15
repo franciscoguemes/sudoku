@@ -1,6 +1,6 @@
 package com.franciscoguemes.sudoku.model;
 
-import com.franciscoguemes.sudoku.solver.BacktrackingSolver;
+import com.franciscoguemes.sudoku.solver.DancingLinksSolver;
 import com.franciscoguemes.sudoku.solver.SolveResult;
 import com.franciscoguemes.sudoku.solver.TechniqueLevel;
 import com.franciscoguemes.sudoku.solver.TechniqueSolver;
@@ -25,7 +25,7 @@ public class TechniqueGradedGenerator implements Generator {
 
         TechniqueLevel maxLevel = difficulty.getTechniqueLevel();
 
-        Puzzle solved = Generator.generateFullSolution(puzzleType, new BacktrackingSolver());
+        Puzzle solved = Generator.generateFullSolution(puzzleType, new DancingLinksSolver());
 
         List<int[]> positions = Generator.shuffledPositions(puzzleType);
 
