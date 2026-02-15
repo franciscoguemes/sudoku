@@ -60,6 +60,8 @@ public class GameApp extends Application {
         // Puzzle type selector
         Map<PuzzleType, String> typeItems = new LinkedHashMap<>();
         for (PuzzleType type : PuzzleType.values()) {
+            // Remove the if statement below to allow playing big Sudoku puzzle
+            if (type == PuzzleType.BIG_SUDOKU || type == PuzzleType.MAXI_SUDOKU) continue;
             typeItems.put(type, type.getDescription());
         }
         SelectorBar<PuzzleType> typeSelector = new SelectorBar<>("Type:", typeItems, PuzzleType.SUDOKU);
