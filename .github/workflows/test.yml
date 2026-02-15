@@ -4,9 +4,9 @@ name: Test Build
 on:
   pull_request:
     branches: [develop, main]
-  push:
-    branches:
-      - '*'
+#  push:
+#    branches:
+#      - '*'
 #    branches: [ develop, 0006__* ]  # Your feature branches
 
 jobs:
