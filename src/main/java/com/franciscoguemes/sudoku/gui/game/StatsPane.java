@@ -39,6 +39,9 @@ public class StatsPane extends VBox {
         scoreLabel = new Label("0");
         scoreLabel.setFont(Font.font("System", FontWeight.BOLD, 32));
         scoreLabel.setStyle("-fx-text-fill: #1A237E;");
+        //Delete the lines below to show again the score of the game
+        scoreLabel.setVisible(false);
+        scoreLabel.setManaged(false);
 
         HBox statsRow = new HBox(24);
         statsRow.setAlignment(Pos.CENTER);
