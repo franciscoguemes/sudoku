@@ -13,6 +13,8 @@ This version is based in providing the basic logic for playing the Sudoku games
     - Highlight
         - row, cell, box
         - similar numbers
+    - Mouse input (Panel of numbers)
+      - Numbers exhaustion
     - Keyboard input
     - Erase cell functionality
     - Note-taking mode
@@ -33,6 +35,7 @@ quality of the UX.
     - Improve generation of puzzles by introducing threads
     - Improve logged information
 - UX & GUI
+    - Increase cell size for notes in big Sudoku boards (12x12 and 16x16)
     - Hints functionality
     - Scoring
 - TextUI
