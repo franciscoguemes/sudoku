@@ -28,6 +28,9 @@ public class GameToolBar extends HBox {
         Button eraseBtn = createToolButton("Erase");
         notesBtn = createToolButton("Notes");
         Button hintsBtn = createToolButton("Hints");
+        //Delete the lines below to show again the Hints button
+        hintsBtn.setVisible(false);
+        hintsBtn.setManaged(false);
 
         undoBtn.setOnAction(e -> {
             if (onUndo != null) onUndo.run();
