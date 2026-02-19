@@ -88,7 +88,7 @@ jobs:
           coverage_results_path: target/site/jacoco/jacoco.xml
           coverage_report_name: Code Coverage Report
           coverage_report_title: JaCoCo
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           minimum_coverage: 80
           fail_below_threshold: false
 
