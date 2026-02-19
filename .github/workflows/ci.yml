@@ -5,6 +5,12 @@ on:
     branches: [ main, develop ]
     types: [ opened, synchronize, reopened ]
 
+# The action dorny/test-reporter action needs the permissions
+permissions:
+  contents: read    # ✅ Can checkout code
+  checks: write     # ✅ Can create test reports in Checks tab
+  pull-requests: write  # ✅ Can comment on PR
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
