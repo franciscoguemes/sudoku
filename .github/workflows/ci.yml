@@ -41,26 +41,21 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-#      - name: Build with Maven
-#        run: mvn -B compile
-
       - name: Run tests
         run: mvn -B verify
 
-        # Uncomment the block below:
-        #      Uploads raw test files as GitHub Actions artifacts
-        #      Saves the actual XML files from target/surefire-reports/ and target/failsafe-reports/
-        #      These are the raw output files from Maven Surefire/Failsafe plugins
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.os }}
-          path: |
-            **/target/surefire-reports/
-            **/target/failsafe-reports/
+        # These files are the actual XML files from target/surefire-reports/ and target/failsafe-reports/
+        # These are the raw output files from Maven Surefire/Failsafe plugins
+#      - name: Upload test report files in artifacts
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: test-results-${{ matrix.os }}
+#          path: |
+#            **/target/surefire-reports/
+#            **/target/failsafe-reports/
 
-      - name: Publish Test Report
+      - name: Publish test report in checks view
         if: always()
         uses: dorny/test-reporter@v1
         with:
@@ -69,9 +64,7 @@ jobs:
           reporter: java-junit
           fail-on-error: true
 
-
-      # Option A: PR Comment Coverage Report (Visible in PR conversation)
-      - name: Add coverage to PR
+      - name: Add JaCoCo report for changed files as comment in PR
         uses: madrapps/jacoco-report@v1.7.2
         with:
           paths: '**/target/site/jacoco/jacoco.xml'
@@ -81,21 +74,19 @@ jobs:
           title: "# 📊 Code Coverage"
           update-comment: true
 
-      # Option B: Check Run Coverage Report (Visible in Checks tab)
-      - name: JaCoCo Check Run
-        uses: PavanMudigonda/jacoco-reporter@v2.3
-        with:
-          coverage_results_path: target/site/jacoco/jacoco.xml
-          coverage_report_name: Code Coverage Report
-          coverage_report_title: JaCoCo
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          minimum_coverage: 80
-          fail_below_threshold: false
+#      - name: Add JaCoCo full report in checks view (neutral check)
+#        uses: PavanMudigonda/jacoco-reporter@v2.3
+#        with:
+#          coverage_results_path: target/site/jacoco/jacoco.xml
+#          coverage_report_name: Code Coverage Report
+#          coverage_report_title: JaCoCo
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          minimum_coverage: 80
+#          fail_below_threshold: false
 
-
-      - name: Upload Coverage Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-${{ matrix.os }}
-          path: '**/target/site/jacoco/'
+#      - name: Upload Coverage Report
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: coverage-report-${{ matrix.os }}
+#          path: '**/target/site/jacoco/'
