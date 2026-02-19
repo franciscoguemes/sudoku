@@ -43,5 +43,14 @@ jobs:
       - name: Upload Snap Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sudoku-snap
+          name: sudoku-best
           path: "*.snap"
+
+#      - name: Publish to Snap Store (Canonical Snapcraft)
+#        if: startsWith(github.ref, 'refs/tags/')
+#        env:
+#          SNAPCRAFT_TOKEN: ${{ secrets.SNAPCRAFT_TOKEN }}
+#        run: |
+#          echo "$SNAPCRAFT_TOKEN" > snapcraft.token
+#          snapcraft login --with snapcraft.token
+#          snapcraft upload sudoku_*.snap --release stable

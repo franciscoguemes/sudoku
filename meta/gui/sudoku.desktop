@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Sudoku
+Comment=Sudoku solver engine and desktop game
+Exec=sudoku
+Icon=${SNAP}/meta/gui/icon.png
+Terminal=false
+Type=Application
+Categories=Game;LogicGame;

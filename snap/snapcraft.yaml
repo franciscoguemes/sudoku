@@ -1,0 +1,8 @@
+
+desktop:
+  plugin: dump
+  source: .
+  stage:
+    - meta/gui/sudoku.desktop
+  prime:
+    - meta/gui/sudoku.desktop
