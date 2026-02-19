@@ -62,3 +62,10 @@ jobs:
           path: '**/target/surefire-reports/*.xml'
           reporter: java-junit
           fail-on-error: true
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ matrix.os }}
+          path: '**/target/site/jacoco/'
