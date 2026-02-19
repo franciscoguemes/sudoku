@@ -69,6 +69,30 @@ jobs:
           reporter: java-junit
           fail-on-error: true
 
+
+      # Option A: PR Comment Coverage Report (Visible in PR conversation)
+      - name: Add coverage to PR
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: '**/target/site/jacoco/jacoco.xml'
+#          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 80
+          min-coverage-changed-files: 70
+          title: "# 📊 Code Coverage"
+          update-comment: true
+
+      # Option B: Check Run Coverage Report (Visible in Checks tab)
+      - name: JaCoCo Check Run
+        uses: PavanMudigonda/jacoco-reporter@v2.3
+        with:
+          coverage_results_path: target/site/jacoco/jacoco.xml
+          coverage_report_name: Code Coverage Report
+          coverage_report_title: JaCoCo
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+          minimum_coverage: 80
+          fail_below_threshold: false
+
+
       - name: Upload Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
