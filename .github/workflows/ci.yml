@@ -45,14 +45,14 @@ jobs:
         #      Uploads raw test files as GitHub Actions artifacts
         #      Saves the actual XML files from target/surefire-reports/ and target/failsafe-reports/
         #      These are the raw output files from Maven Surefire/Failsafe plugins
-#      - name: Upload Test Results
-#        if: always()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: test-results-${{ matrix.os }}
-#          path: |
-#            **/target/surefire-reports/
-#            **/target/failsafe-reports/
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
 
       - name: Publish Test Report
         if: always()
