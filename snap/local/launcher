@@ -1,6 +1,6 @@
 #!/bin/bash
 
 exec "$SNAP/jre/bin/java" \
-  --module-path "$SNAP/app/lib" \
+  --module-path "$SNAP/app/sudoku.jar:$SNAP/app/lib" \
   --module com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher \
   "$@"
