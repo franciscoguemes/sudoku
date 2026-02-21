@@ -1,8 +1,51 @@
+name: sudoku
+base: core22
+version: '1.0.0'
+summary: Sudoku game and editor
+description: |
+  A Sudoku application with both a console UI and a JavaFX GUI,
+  featuring a game mode and a puzzle editor.
 
-desktop:
-  plugin: dump
-  source: .
-  stage:
-    - meta/gui/sudoku.desktop
-  prime:
-    - meta/gui/sudoku.desktop
+grade: stable        # use 'devel' during development
+confinement: classic # JavaFX needs direct GPU/display access
+
+architectures:
+  - build-on: amd64
+
+apps:
+  sudoku:
+    command: bin/launcher
+    environment:
+      JAVA_HOME: $SNAP/jre
+      PATH: $SNAP/jre/bin:$PATH
+
+parts:
+  jre:
+    plugin: dump
+    source: target/custom-jre
+#    source: ../../custom-jre
+    organize:
+      '*': jre/
+
+  app:
+    plugin: dump
+    source: target/
+#    source: ../..
+    stage-packages: []
+    organize:
+      sudoku-1.0-SNAPSHOT.jar: app/sudoku.jar
+    stage:
+      - app/sudoku.jar
+
+  libs:
+    plugin: dump
+    source: target/lib
+#    source: ../../lib
+    organize:
+      '*': app/lib/
+
+  launcher:
+    plugin: dump
+    source: snap/local/
+    organize:
+      launcher: bin/launcher
