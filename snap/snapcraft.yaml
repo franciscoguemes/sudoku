@@ -19,18 +19,19 @@ apps:
       JAVA_HOME: $SNAP/jre
       PATH: $SNAP/jre/bin:$PATH
 
+# For all the sources the file take as base directory `target/snap_build`
+# See the file `utils/build_snap.sh` to see how the base directory is prepared
+
 parts:
   jre:
     plugin: dump
-    source: target/custom-jre
-#    source: ../../custom-jre
+    source: jre/
     organize:
       '*': jre/
 
   app:
     plugin: dump
-    source: target/
-#    source: ../..
+    source: jar/
     stage-packages: []
     organize:
       sudoku-1.0-SNAPSHOT.jar: app/sudoku.jar
@@ -39,8 +40,7 @@ parts:
 
   libs:
     plugin: dump
-    source: target/lib
-#    source: ../../lib
+    source: lib/
     organize:
       '*': app/lib/
 
