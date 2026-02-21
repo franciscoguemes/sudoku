@@ -126,7 +126,7 @@
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
         <configuration>
-          <mainClass>com.franciscoguemes.sudoku.gui.GameApp</mainClass>
+          <mainClass>com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.gui.GameApp</mainClass>
           <options>
             <option>--enable-native-access=javafx.graphics</option>
           </options>

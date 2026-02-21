@@ -85,33 +85,34 @@ mvn package -DskipTests
 ```
 
 This produces:
-- `target/sudoku-1.0-SNAPSHOT.jar` — the application JAR with a `Class-Path` manifest entry referencing `lib/`
+- `target/sudoku-1.0-SNAPSHOT.jar` — the named-module application JAR
 - `target/lib/` — all runtime dependencies (JavaFX, SLF4J, Logback, …)
 
-Then run the JAR directly. Because JavaFX is a modular library that must be placed on the **module path** so it can load its native components, add `--module-path` and `--add-modules` to the invocation:
+The application is a proper named JPMS module (`com.franciscoguemes.sudoku`).
+Place **both** the dependency directory and the application JAR on the module path
+so that the module descriptor is honoured, then use `-m` to select the entry point:
 
 **Sudoku Game (default):**
 ```bash
-java --module-path target/lib \
-     --add-modules javafx.controls \
+java --module-path target/lib:target/sudoku-1.0-SNAPSHOT.jar \
      --enable-native-access=javafx.graphics \
-     -jar target/sudoku-1.0-SNAPSHOT.jar
+     -m com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher
 ```
 
 **Sudoku Editor:**
 ```bash
-java --module-path target/lib \
-     --add-modules javafx.controls \
+java --module-path target/lib:target/sudoku-1.0-SNAPSHOT.jar \
      --enable-native-access=javafx.graphics \
-     -jar target/sudoku-1.0-SNAPSHOT.jar --editor
+     -m com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher --editor
 ```
 
 **Console App:**
 ```bash
-java --module-path target/lib \
-     --add-modules javafx.controls \
-     -jar target/sudoku-1.0-SNAPSHOT.jar --console
+java --module-path target/lib:target/sudoku-1.0-SNAPSHOT.jar \
+     -m com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher --console
 ```
+
+> **Windows:** replace `:` with `;` in `--module-path` (e.g. `target\lib;target\sudoku-1.0-SNAPSHOT.jar`).
 
 ## Game Controls
 
