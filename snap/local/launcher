@@ -1,6 +1,14 @@
 #!/bin/bash
 
+# Build classpath from all JARs in the classpath directory
+CP=""
+for jar in "$SNAP/app/classpath/"*.jar; do
+    CP="$CP:$jar"
+done
+
 exec "$SNAP/jre/bin/java" \
   --module-path "$SNAP/app/sudoku.jar:$SNAP/app/lib" \
+  --class-path "$CP" \
+  --add-reads com.franciscoguemes.sudoku=ALL-UNNAMED \
   --module com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher \
   "$@"

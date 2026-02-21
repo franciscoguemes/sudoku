@@ -108,15 +108,29 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.6.1</version>
         <executions>
+          <!-- Modular deps (JavaFX etc) -->
           <execution>
-            <id>copy-dependencies</id>
+            <id>copy-modular-deps</id>
             <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
+            <goals><goal>copy-dependencies</goal></goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <includeScope>runtime</includeScope>
+              <outputDirectory>${project.build.directory}/lib/modular</outputDirectory>
+              <includeArtifactIds>
+                javafx-base,javafx-controls,javafx-fxml,javafx-graphics
+              </includeArtifactIds>
+              <classifier>linux</classifier>
+            </configuration>
+          </execution>
+          <!-- Non-modular deps (SLF4J, Logback) -->
+          <execution>
+            <id>copy-classpath-deps</id>
+            <phase>package</phase>
+            <goals><goal>copy-dependencies</goal></goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib/classpath</outputDirectory>
+              <excludeArtifactIds>
+                javafx-base,javafx-controls,javafx-fxml,javafx-graphics
+              </excludeArtifactIds>
             </configuration>
           </execution>
         </executions>

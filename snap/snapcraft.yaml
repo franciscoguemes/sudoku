@@ -38,11 +38,17 @@ parts:
     stage:
       - app/sudoku.jar
 
-  libs:
+  modular-libs:
     plugin: dump
-    source: lib/
+    source: lib/modular
     organize:
       '*': app/lib/
+
+  classpath-libs:
+    plugin: dump
+    source: lib/classpath
+    organize:
+      '*': app/classpath/
 
   launcher:
     plugin: dump
