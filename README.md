@@ -79,26 +79,38 @@ mvn compile exec:java -Dexec.mainClass="com.franciscoguemes.sudoku.ConsoleApp" -
 
 ### Running without Maven
 
-First, compile and package the fat JAR (includes all dependencies):
+First, compile and package the thin JAR and copy all runtime dependencies into `target/lib/`:
 ```bash
 mvn package -DskipTests
 ```
 
-Then run the JAR directly:
+This produces:
+- `target/sudoku-1.0-SNAPSHOT.jar` — the application JAR with a `Class-Path` manifest entry referencing `lib/`
+- `target/lib/` — all runtime dependencies (JavaFX, SLF4J, Logback, …)
+
+Then run the JAR directly. Because JavaFX is a modular library that must be placed on the **module path** so it can load its native components, add `--module-path` and `--add-modules` to the invocation:
 
 **Sudoku Game (default):**
 ```bash
-java -jar target/sudoku-1.0-SNAPSHOT.jar
+java --module-path target/lib \
+     --add-modules javafx.controls \
+     --enable-native-access=javafx.graphics \
+     -jar target/sudoku-1.0-SNAPSHOT.jar
 ```
 
 **Sudoku Editor:**
 ```bash
-java -jar target/sudoku-1.0-SNAPSHOT.jar --editor
+java --module-path target/lib \
+     --add-modules javafx.controls \
+     --enable-native-access=javafx.graphics \
+     -jar target/sudoku-1.0-SNAPSHOT.jar --editor
 ```
 
 **Console App:**
 ```bash
-java -jar target/sudoku-1.0-SNAPSHOT.jar --console
+java --module-path target/lib \
+     --add-modules javafx.controls \
+     -jar target/sudoku-1.0-SNAPSHOT.jar --console
 ```
 
 ## Game Controls
