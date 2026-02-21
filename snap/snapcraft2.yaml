@@ -1,0 +1,89 @@
+name: sudoku                  # snap name (lowercase, hyphens only)
+version: '1.0'
+summary: A JavaFX Sudoku application
+description: |
+  Play Sudoku on your desktop. Built with JavaFX and Java 25.
+
+grade: devel          # use 'stable' when ready to publish
+confinement: strict
+base: core22          # Ubuntu 22.04 base
+
+architectures:
+  - build-on: amd64
+    build-for: amd64
+
+apps:
+  sudoku:
+    command: bin/sudoku-launcher.sh
+    environment:
+      # Tell JavaFX where to find native GTK/X11 libs inside the snap
+      LIBGL_ALWAYS_SOFTWARE: "0"
+    plugs:
+      - desktop
+      - desktop-legacy
+      - x11
+      - wayland
+      - opengl
+      - home
+      - audio-playback   # remove if not needed
+
+parts:
+
+  # Part 1: Copy the fat jar (pre-built locally)
+  app-jar:
+    plugin: dump
+    source: target/
+    stage:
+      - sudoku-1.0.jar          # <-- adjust to your actual jar name
+    organize:
+      sudoku-1.0.jar: sudoku.jar
+
+  # Part 2: Download JDK 25, run jlink to produce a minimal JRE
+  jre:
+    plugin: nil
+    build-packages:
+      - wget
+      - binutils                # needed by jlink for objcopy
+    override-build: |
+      # Download Temurin 25 (adjust URL for latest build from adoptium.net)
+      JDK_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25%2B9/OpenJDK25U-jdk_x64_linux_hotspot_25_9.tar.gz"
+      wget -q "$JDK_URL" -O jdk25.tar.gz
+      mkdir -p jdk25
+      tar -xzf jdk25.tar.gz -C jdk25 --strip-components=1
+
+      # Download JavaFX 25 SDK
+      FX_URL="https://download2.gluonhq.com/openjfx/25/openjfx-25_linux-x64_bin-sdk.zip"
+      wget -q "$FX_URL" -O javafx.zip
+      mkdir -p javafx
+      unzip -q javafx.zip -d javafx_extract
+      mv javafx_extract/javafx-sdk-*/* javafx/
+
+      # Create a minimal JRE with jlink (include JavaFX jmods)
+      # Download JavaFX jmods as well
+      FX_JMODS_URL="https://download2.gluonhq.com/openjfx/25/openjfx-25_linux-x64_bin-jmods.zip"
+      wget -q "$FX_JMODS_URL" -O javafx-jmods.zip
+      mkdir -p javafx_jmods
+      unzip -q javafx-jmods.zip -d jmods_extract
+      mv jmods_extract/javafx-jmods-*/* javafx_jmods/
+
+      # Build the custom JRE
+      ./jdk25/bin/jlink \
+        --module-path "jdk25/jmods:javafx_jmods" \
+        --add-modules java.base,java.desktop,java.logging,java.xml,java.prefs,java.naming,\
+      javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.web,javafx.base \
+        --output "$SNAPCRAFT_PART_INSTALL/jre" \
+        --strip-debug \
+        --compress zip-6 \
+        --no-header-files \
+        --no-man-pages
+
+      # Copy JavaFX native libs into the snap
+      mkdir -p "$SNAPCRAFT_PART_INSTALL/javafx/lib"
+      cp javafx/lib/*.so "$SNAPCRAFT_PART_INSTALL/javafx/lib/" 2>/dev/null || true
+
+  # Part 3: The launcher script
+  launcher:
+    plugin: dump
+    source: snap/local/
+    organize:
+      sudoku-launcher.sh: bin/sudoku-launcher.sh
