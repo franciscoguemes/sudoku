@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 PROJECT_DIR=~/git/francisco/github/sudoku
 JAR_FILE="${PROJECT_DIR}"/target/sudoku-1.0-SNAPSHOT.jar
 
