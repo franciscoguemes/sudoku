@@ -3,11 +3,11 @@ module com.franciscoguemes.sudoku {
     requires javafx.controls;
 //    requires javafx.fxml;
 
-    // SLF4J API; the logback-classic backend is discovered at runtime
-    // via ServiceLoader (org.slf4j uses SLF4JServiceProvider) and therefore
-    // does not need an explicit requires here.
-//    requires org.slf4j;
-    requires static org.slf4j;
+    // SLF4J API — logback-classic is discovered automatically at runtime via
+    // ServiceLoader (org.slf4j uses SLF4JServiceProvider; logback provides it).
+    // No explicit requires for logback is needed: the JVM includes service
+    // providers in the module graph automatically when they are on --module-path.
+    requires org.slf4j;
 
     // JavaFX instantiates Application subclasses (GameApp, EditorApp) and
     // introspects custom-control classes for CSS / property resolution via

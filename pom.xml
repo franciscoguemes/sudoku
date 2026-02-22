@@ -108,29 +108,72 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.6.1</version>
         <executions>
-          <!-- Modular deps (JavaFX etc) -->
+          <!-- Runtime deps (SLF4J, Logback, …) — excludes test scope and JavaFX base JARs -->
           <execution>
-            <id>copy-modular-deps</id>
+            <id>copy-runtime-deps</id>
             <phase>package</phase>
             <goals><goal>copy-dependencies</goal></goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/lib/modular</outputDirectory>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <includeScope>runtime</includeScope>
+              <excludeArtifactIds>
+                javafx-base,javafx-controls,javafx-fxml,javafx-graphics
+              </excludeArtifactIds>
+            </configuration>
+          </execution>
+          <!-- JavaFX platform JARs — linux classifier bundles natives alongside the module bytecode -->
+          <execution>
+            <id>copy-javafx-linux</id>
+            <phase>package</phase>
+            <goals><goal>copy-dependencies</goal></goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <includeArtifactIds>
                 javafx-base,javafx-controls,javafx-fxml,javafx-graphics
               </includeArtifactIds>
               <classifier>linux</classifier>
             </configuration>
           </execution>
-          <!-- Non-modular deps (SLF4J, Logback) -->
+        </executions>
+      </plugin>
+      <!--
+        moditect patches non-modular JARs with a generated module-info.class so
+        every dependency can live on - -module-path.  All current runtime deps
+        (SLF4J 2.x, Logback 1.5.x, JavaFX 25) are already named modules, so the
+        <modules> list is intentionally empty.  When you add a non-modular
+        dependency in the future, add a <module> entry here.  Run
+            mvn moditect:generate-module-info
+        first to get a generated descriptor as a starting point, then copy the
+        relevant section into the entry below.
+      -->
+      <plugin>
+        <groupId>org.moditect</groupId>
+        <artifactId>moditect-maven-plugin</artifactId>
+        <version>1.2.2.Final</version>
+        <executions>
           <execution>
-            <id>copy-classpath-deps</id>
+            <id>add-module-info-to-deps</id>
             <phase>package</phase>
-            <goals><goal>copy-dependencies</goal></goals>
+            <goals><goal>add-module-info</goal></goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/lib/classpath</outputDirectory>
-              <excludeArtifactIds>
-                javafx-base,javafx-controls,javafx-fxml,javafx-graphics
-              </excludeArtifactIds>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <overwriteExistingFiles>true</overwriteExistingFiles>
+              <modules>
+                <!--
+                  Example for a future non-modular dependency:
+                  <module>
+                    <artifact>
+                      <groupId>com.example</groupId>
+                      <artifactId>legacy-lib</artifactId>
+                    </artifact>
+                    <moduleInfo>
+                      <name>com.example.legacylib</name>
+                      <exports>*;</exports>
+                      <requires>*;</requires>
+                    </moduleInfo>
+                  </module>
+                -->
+              </modules>
             </configuration>
           </execution>
         </executions>

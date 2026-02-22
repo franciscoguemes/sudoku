@@ -1,17 +1,11 @@
 #!/bin/bash
 
-TARGET_DIR=~/git/francisco/github/sudoku/target
-
-# Build classpath from all JARs in the classpath directory
-CP=""
-for jar in "$TARGET_DIR/lib/classpath/"*.jar; do
-    CP="$CP:$jar"
-done
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+TARGET_DIR="${PROJECT_DIR}/target"
 
 exec java \
-  --module-path "$TARGET_DIR/sudoku-1.0-SNAPSHOT.jar:$TARGET_DIR/lib/modular" \
-  --class-path "$CP" \
-  --add-reads com.franciscoguemes.sudoku=ALL-UNNAMED \
+  --module-path "$TARGET_DIR/sudoku-1.0-SNAPSHOT.jar:$TARGET_DIR/lib" \
   --enable-native-access=javafx.graphics \
   --module com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher \
   "$@"
