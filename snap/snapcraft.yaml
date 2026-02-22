@@ -15,13 +15,14 @@ architectures:
 apps:
   sudoku:
     command: bin/launcher
+    # Snapcraft automatically picks up anything placed in $SNAP_BUILD_DIR/snap/gui/ and copies it to meta/gui/ inside the snap, which is where the desktop environment looks for it.
+    desktop: meta/gui/sudoku.desktop
     environment:
       JAVA_HOME: $SNAP/jre
       PATH: $SNAP/jre/bin:$PATH
 
-# For all the sources the file take as base directory `target/snap_build`
-# See the file `utils/build_snap.sh` to see how the base directory is prepared
-
+# All paths in the `source` attribute are relative to the directory SNAP_BUILD_DIR (See the file `utils/build_snap.sh`),
+# so that snapcraft can resolve them when invoked from that directory.
 parts:
   jre:
     plugin: dump

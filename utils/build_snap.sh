@@ -161,8 +161,9 @@ main() {
     # invoked from that directory.
     log "Step 3/4 — Stage artifacts into ${SNAP_BUILD_DIR}"
 
-    # snapcraft.yaml + launcher script
+    # snapcraft.yaml + launcher script + sudoku.desktop + icon
     run mkdir -p "${SNAP_BUILD_DIR}/snap/local"
+    run mkdir -p "${SNAP_BUILD_DIR}/snap/gui"
     run cp -R "${PROJECT_DIR}/snap/." "${SNAP_BUILD_DIR}/snap/"
     log_debug "Staged: snap/ → snap-build/snap/"
 
