@@ -33,15 +33,28 @@ jobs:
           cache: maven
 
       # ── Resolve version ────────────────────────────────────────────────────
-      # On a tag push the version comes from the tag name (strip the leading v).
-      # On a manual dispatch the caller provides it explicitly.
+      # Three sources, evaluated in order:
+      #   1. Tag push  →  strip the leading 'v' from the tag name
+      #   2. workflow_dispatch  →  the version input provided by the caller
+      #   3. Branch push (testing)  →  0.0.0+git<short-sha> dev snapshot
+      #
+      # Note: ${{ github.event.inputs.version }} is expanded to a literal empty
+      # string by GitHub Actions when the trigger is not a workflow_dispatch, so
+      # the elif guard is evaluated in shell against "" and falls through to the
+      # else branch as intended.
       - name: Determine version
         id: version
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
-          else
+          elif [[ -n "${{ github.event.inputs.version }}" ]]; then
             VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="0.0.0+git${GITHUB_SHA::7}"
+          fi
+          if [[ -z "${VERSION}" ]]; then
+            echo "::error::Could not determine a version from ref '${GITHUB_REF}'"
+            exit 1
           fi
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "Resolved version: ${VERSION}"
