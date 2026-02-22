@@ -11,46 +11,144 @@ on:
         required: true
         default: '1.0.0'
 
+env:
+  JAVAFX_VERSION: '25.0.2'
+
 jobs:
   build-snap:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    # ubuntu-22.04 matches base: core22 in snap/snapcraft.yaml.
+    # Running snapcraft --destructive-mode on the same OS as the snap base avoids
+    # glibc/ABI mismatches that would surface at install time.
+    runs-on: ubuntu-22.04
 
-      - uses: actions/setup-java@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'temurin'
+          cache: maven
 
+      # ── Resolve version ────────────────────────────────────────────────────
+      # On a tag push the version comes from the tag name (strip the leading v).
+      # On a manual dispatch the caller provides it explicitly.
       - name: Determine version
         id: version
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
           else
-            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+            VERSION="${{ github.event.inputs.version }}"
           fi
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "Resolved version: ${VERSION}"
 
-      - name: Build JAR
+      # ── JavaFX JMODs (needed by jlink to embed JavaFX into the custom JRE) ─
+      - name: Cache JavaFX JMODs
+        id: cache-javafx-jmods
+        uses: actions/cache@v4
+        with:
+          path: ~/javafx-jmods/${{ env.JAVAFX_VERSION }}
+          key: javafx-jmods-linux-${{ env.JAVAFX_VERSION }}
+
+      - name: Download JavaFX JMODs
+        if: steps.cache-javafx-jmods.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/javafx-jmods/${JAVAFX_VERSION}
+          wget -q -O /tmp/javafx-jmods.zip \
+            "https://download2.gluonhq.com/openjfx/${JAVAFX_VERSION}/openjfx-${JAVAFX_VERSION}_linux-x64_bin-jmods.zip"
+          unzip -q /tmp/javafx-jmods.zip -d /tmp/javafx-jmods-extracted
+          cp /tmp/javafx-jmods-extracted/javafx-jmods-${JAVAFX_VERSION}/*.jmod \
+             ~/javafx-jmods/${JAVAFX_VERSION}/
+
+      # ── Step 1: Maven build ────────────────────────────────────────────────
+      # Produces:
+      #   target/sudoku-*.jar          — application thin JAR
+      #   target/lib/                  — all runtime deps (flat, all named modules)
+      - name: Maven build
         run: mvn -B package -DskipTests
 
-      - name: Build Snap
-        uses: diddlesnaps/snapcraft-multiarch-action@v1
-        with:
-          snapcraft-token: ${{ secrets.SNAPCRAFT_TOKEN }}
-          snap-file: sudoku_${{ steps.version.outputs.version }}_amd64.snap
+      # ── Step 2: Custom JRE ────────────────────────────────────────────────
+      # Replicates utils/create_custom_jre.sh using JAVA_HOME set by setup-java
+      # (avoids the hardcoded PROJECT_DIR in the local script).
+      - name: Create custom JRE
+        run: |
+          JAVAFX_JMODS=~/javafx-jmods/${JAVAFX_VERSION}
+          OUTPUT_DIR=target/custom-jre
+          rm -rf "${OUTPUT_DIR}"
+          jlink \
+            --module-path "${JAVA_HOME}/jmods:${JAVAFX_JMODS}" \
+            --add-modules java.base,java.desktop,java.logging,java.naming,jdk.jfr,javafx.controls,javafx.fxml,javafx.graphics,javafx.base,jdk.unsupported \
+            --strip-debug \
+            --no-header-files \
+            --no-man-pages \
+            --compress zip-6 \
+            --output "${OUTPUT_DIR}"
+          echo "Custom JRE size: $(du -sh ${OUTPUT_DIR} | cut -f1)"
 
-      - name: Upload Snap Artifact
+      # ── Snapcraft installation ─────────────────────────────────────────────
+      # core22 is the snap base declared in snap/snapcraft.yaml; installing it
+      # upfront prevents snapcraft --destructive-mode from trying to fetch it
+      # mid-build in an environment where network access may be restricted.
+      - name: Install snapcraft
+        run: |
+          sudo snap install snapcraft --classic
+          sudo snap install core22
+
+      # ── Step 3: Stage artifacts ────────────────────────────────────────────
+      # Mirrors what utils/build_snap.sh does: assemble everything snapcraft
+      # needs inside target/snap-build/ so all source: paths in snapcraft.yaml
+      # resolve relative to that directory.
+      - name: Stage artifacts
+        run: |
+          SNAP_BUILD_DIR=target/snap-build
+          VERSION=${{ steps.version.outputs.version }}
+
+          # snapcraft.yaml + launcher script + desktop file + icon
+          mkdir -p "${SNAP_BUILD_DIR}/snap/local" "${SNAP_BUILD_DIR}/snap/gui"
+          cp -R snap/. "${SNAP_BUILD_DIR}/snap/"
+          # Stamp the release version into the staged snapcraft.yaml
+          sed -i "s/^version: '.*'/version: '${VERSION}'/" \
+            "${SNAP_BUILD_DIR}/snap/snapcraft.yaml"
+
+          # Custom JRE  →  snap-build/jre/
+          mkdir -p "${SNAP_BUILD_DIR}/jre"
+          cp -r target/custom-jre/. "${SNAP_BUILD_DIR}/jre/"
+
+          # Application JAR  →  snap-build/jar/
+          mkdir -p "${SNAP_BUILD_DIR}/jar"
+          cp target/sudoku-*.jar "${SNAP_BUILD_DIR}/jar/"
+
+          # Runtime deps (flat, all named modules)  →  snap-build/lib/
+          mkdir -p "${SNAP_BUILD_DIR}/lib"
+          cp -r target/lib/. "${SNAP_BUILD_DIR}/lib/"
+
+      # ── Step 4: Build snap ─────────────────────────────────────────────────
+      - name: Build snap
+        run: |
+          cd target/snap-build
+          snapcraft --destructive-mode
+
+      # ── Upload artifact ────────────────────────────────────────────────────
+      - name: Upload snap artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sudoku-best
-          path: "*.snap"
+          name: sudoku-snap-${{ steps.version.outputs.version }}
+          path: target/snap-build/*.snap
+          if-no-files-found: error
 
-#      - name: Publish to Snap Store (Canonical Snapcraft)
+#      # ── Publish to Snap Store ──────────────────────────────────────────────
+#      # Uncomment once the snap name is registered in the Snap Store and a
+#      # SNAPCRAFT_TOKEN secret has been added to the repository settings.
+#      # Generate the token locally with:
+#      #   snapcraft export-login --snaps=sudoku --channels=stable snapcraft.token
+#      # then store its contents as the SNAPCRAFT_TOKEN repository secret.
+#      - name: Publish to Snap Store
 #        if: startsWith(github.ref, 'refs/tags/')
 #        env:
-#          SNAPCRAFT_TOKEN: ${{ secrets.SNAPCRAFT_TOKEN }}
+#          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
 #        run: |
-#          echo "$SNAPCRAFT_TOKEN" > snapcraft.token
-#          snapcraft login --with snapcraft.token
-#          snapcraft upload sudoku_*.snap --release stable
+#          snapcraft upload target/snap-build/sudoku_*.snap --release=stable
