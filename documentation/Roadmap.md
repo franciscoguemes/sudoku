@@ -32,7 +32,7 @@ quality of the UX.
 
 - Sudoku puzzles 12x12 and 16x16
     - Generation of random puzzles
-    - Improve generation of puzzles by introducing threads
+    - Improve generation of puzzles by introducing threads in the creation and a progress dialog
     - Improve logged information
 - UX & GUI
     - Increase cell size for notes in big Sudoku boards (12x12 and 16x16)
