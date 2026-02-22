@@ -5,6 +5,7 @@
 #Output stdout  : Progress messages for each build step
 #Output stderr  : Error messages when a required tool is missing or a step fails
 #Return code    : 0 on success, non-zero on failure
+#Log file       : /var/log/sudoku/build_snap.log
 #Description    : Builds the Sudoku snap package without polluting the project root.
 #                 The build is performed in four steps:
 #                   1. Maven clean package   → target/sudoku-*.jar + target/lib/
@@ -23,11 +24,12 @@
 ####################################################################################################
 
 # ── Constants ─────────────────────────────────────────────────────────────────
-APP_NAME="build_snap"
+APP_NAME="sudoku"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 LOG_DIR="/var/log/${APP_NAME}"
-LOG_FILE="${LOG_DIR}/${APP_NAME}.log"
+LOG_FILE="${LOG_DIR}/${SCRIPT_NAME}.log"
 SNAP_BUILD_DIR="${PROJECT_DIR}/target/snap-build"
 APP_JAR_PATTERN="sudoku-*.jar"
 

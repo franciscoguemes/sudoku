@@ -5,6 +5,7 @@
 #Output stdout  : Progress messages for each installation step
 #Output stderr  : Error messages when a required tool is missing or a step fails
 #Return code    : 0 on success, non-zero on failure
+#Log file       : /var/log/sudoku/install_snap.log
 #Description    : Installs the Sudoku snap package built by utils/build_snap.sh.
 #                 The script performs three steps:
 #                   1. Verify that a *.snap file exists in target/snap-build/
@@ -20,11 +21,12 @@
 ####################################################################################################
 
 # ── Constants ─────────────────────────────────────────────────────────────────
-APP_NAME="install_snap"
+APP_NAME="sudoku"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 LOG_DIR="/var/log/${APP_NAME}"
-LOG_FILE="${LOG_DIR}/${APP_NAME}.log"
+LOG_FILE="${LOG_DIR}/${SCRIPT_NAME}.log"
 SNAP_BUILD_DIR="${PROJECT_DIR}/target/snap-build"
 SNAP_APP_NAME="sudoku"
 
