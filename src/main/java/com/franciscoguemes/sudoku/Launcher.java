@@ -6,17 +6,18 @@ import com.franciscoguemes.sudoku.gui.EditorApp;
 import java.util.Arrays;
 
 /**
- * Non-Application launcher class required for running JavaFX from a fat JAR.
+ * Application entry point that dispatches to one of the three sub-applications.
  * <p>
- * JavaFX checks that the main class extends {@code Application} when loaded via
- * the module system. By using a plain launcher, the fat JAR can be executed with
- * {@code java -jar sudoku.jar} without needing {@code --module-path}.
+ * A plain (non-{@code Application}) main class is used so that the same entry
+ * point works for all three modes without requiring three separate
+ * {@code --module} invocations.
  * </p>
- * <p>Usage:</p>
+ * <p>Usage (run as a named module):</p>
  * <ul>
- *     <li>{@code java -jar sudoku.jar} — launches the Sudoku Game (default)</li>
- *     <li>{@code java -jar sudoku.jar --editor} — launches the Sudoku Editor</li>
- *     <li>{@code java -jar sudoku.jar --console} — launches the Console App</li>
+ *     <li>{@code java --module-path <libs> -m com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher}
+ *         — launches the Sudoku Game (default)</li>
+ *     <li>{@code ... Launcher --editor} — launches the Sudoku Editor</li>
+ *     <li>{@code ... Launcher --console} — launches the Console App</li>
  * </ul>
  */
 public class Launcher {

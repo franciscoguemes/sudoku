@@ -1,0 +1,7 @@
+#!/bin/bash
+
+exec "$SNAP/jre/bin/java" \
+  --module-path "$SNAP/app/sudoku.jar:$SNAP/app/lib" \
+  --enable-native-access=javafx.graphics \
+  --module com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher \
+  "$@"

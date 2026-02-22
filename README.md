@@ -16,6 +16,7 @@ A Sudoku solver engine and desktop game implementation in Java. The project supp
 - **GUI Framework**: JavaFX 25.0.2
 - **Build Tool**: Maven
 - **Testing**: JUnit 5
+- **Module patching**: moditect (patches non-modular JARs with `module-info.class` so all dependencies live on `--module-path`)
 
 ## Applications
 
@@ -79,27 +80,40 @@ mvn compile exec:java -Dexec.mainClass="com.franciscoguemes.sudoku.ConsoleApp" -
 
 ### Running without Maven
 
-First, compile and package the fat JAR (includes all dependencies):
+First, compile and package the thin JAR and copy all runtime dependencies into `target/lib/`:
 ```bash
 mvn package -DskipTests
 ```
 
-Then run the JAR directly:
+This produces:
+- `target/sudoku-1.0-SNAPSHOT.jar` — the named-module application JAR
+- `target/lib/` — all runtime dependencies (JavaFX, SLF4J, Logback, …)
+
+The application is a proper named JPMS module (`com.franciscoguemes.sudoku`).
+Place **both** the dependency directory and the application JAR on the module path
+so that the module descriptor is honoured, then use `-m` to select the entry point:
 
 **Sudoku Game (default):**
 ```bash
-java -jar target/sudoku-1.0-SNAPSHOT.jar
+java --module-path target/lib:target/sudoku-1.0-SNAPSHOT.jar \
+     --enable-native-access=javafx.graphics \
+     -m com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher
 ```
 
 **Sudoku Editor:**
 ```bash
-java -jar target/sudoku-1.0-SNAPSHOT.jar --editor
+java --module-path target/lib:target/sudoku-1.0-SNAPSHOT.jar \
+     --enable-native-access=javafx.graphics \
+     -m com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher --editor
 ```
 
 **Console App:**
 ```bash
-java -jar target/sudoku-1.0-SNAPSHOT.jar --console
+java --module-path target/lib:target/sudoku-1.0-SNAPSHOT.jar \
+     -m com.franciscoguemes.sudoku/com.franciscoguemes.sudoku.Launcher --console
 ```
+
+> **Windows:** replace `:` with `;` in `--module-path` (e.g. `target\lib;target\sudoku-1.0-SNAPSHOT.jar`).
 
 ## Game Controls
 
@@ -131,6 +145,33 @@ mvn clean compile
 ```bash
 mvn test
 ```
+
+## Snap Packaging
+
+Two helper scripts under `utils/` cover the full snap lifecycle:
+
+| Script                  | Purpose                                                                                                                                        |
+|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `utils/build_snap.sh`   | Runs `mvn package`, creates the custom JRE with `jlink`, stages all artifacts, and invokes `snapcraft` to produce `target/snap-build/*.snap`   |
+| `utils/install_snap.sh` | Verifies the snap artifact exists, optionally removes a previous installation, then installs with `snap install --dangerous --classic`          |
+
+```bash
+# Build the snap package
+./utils/build_snap.sh
+
+# Install (or reinstall) the snap package
+./utils/install_snap.sh
+```
+
+Both scripts support `--debug`, `--dry-run`, and `-h/--help`.
+
+## Adding New Dependencies
+
+All runtime dependencies land in a single flat `target/lib/` directory.
+Every JAR on that path must be a named JPMS module.
+
+- **Already-modular JARs** (most modern libraries): just add the `<dependency>` to `pom.xml` and a `requires` line to `module-info.java`. No further action needed.
+- **Non-modular JARs** (legacy libraries without `module-info.class`): add a `<module>` entry to the `moditect-maven-plugin` configuration in `pom.xml`. Run `mvn moditect:generate-module-info` first to get a generated descriptor as a starting point, then paste the relevant block into the plugin config.
 
 # Sources
 

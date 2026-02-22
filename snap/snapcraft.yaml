@@ -1,0 +1,52 @@
+name: sudoku
+base: core22
+version: '1.0.0'
+summary: Sudoku game and editor
+description: |
+  A Sudoku application with both a console UI and a JavaFX GUI,
+  featuring a game mode and a puzzle editor.
+
+grade: stable        # use 'devel' during development
+confinement: classic # JavaFX needs direct GPU/display access
+
+architectures:
+  - build-on: amd64
+
+apps:
+  sudoku:
+    command: bin/launcher
+    # Snapcraft automatically picks up anything placed in $SNAP_BUILD_DIR/snap/gui/ and copies it to meta/gui/ inside the snap, which is where the desktop environment looks for it.
+    desktop: meta/gui/sudoku.desktop
+    environment:
+      JAVA_HOME: $SNAP/jre
+      PATH: $SNAP/jre/bin:$PATH
+
+# All paths in the `source` attribute are relative to the directory SNAP_BUILD_DIR (See the file `utils/build_snap.sh`),
+# so that snapcraft can resolve them when invoked from that directory.
+parts:
+  jre:
+    plugin: dump
+    source: jre/
+    organize:
+      '*': jre/
+
+  app:
+    plugin: dump
+    source: jar/
+    stage-packages: []
+    organize:
+      sudoku-1.0-SNAPSHOT.jar: app/sudoku.jar
+    stage:
+      - app/sudoku.jar
+
+  libs:
+    plugin: dump
+    source: lib/
+    organize:
+      '*': app/lib/
+
+  launcher:
+    plugin: dump
+    source: snap/local/
+    organize:
+      launcher: bin/launcher

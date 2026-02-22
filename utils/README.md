@@ -1,0 +1,1 @@
+This directory contains script utilities that may be useful to you during the development or for testing locally CI/CD.

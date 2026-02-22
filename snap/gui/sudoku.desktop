@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Sudoku
+Comment=Sudoku game and puzzle editor
+Exec=sudoku
+Icon=${SNAP}/meta/gui/sudoku.png
+Type=Application
+Categories=Game;LogicGame;
+Terminal=false
+StartupNotify=true
